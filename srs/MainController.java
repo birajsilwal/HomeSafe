@@ -1,2 +1,5 @@
-package PACKAGE_NAME;public class MainController {
+public class MainController {
+    public static void main(String[] args) {
+        System.out.println("hello");
+    }
 }
