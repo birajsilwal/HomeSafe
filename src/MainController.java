@@ -12,6 +12,8 @@ public class MainController extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+
         /*
          * Setup
          */
@@ -29,6 +31,9 @@ public class MainController extends Application {
          * Set the scene
          */
         Scene scene = new Scene(pane, width, height);
+
+
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }
