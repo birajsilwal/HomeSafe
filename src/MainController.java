@@ -38,6 +38,7 @@ public class MainController extends Application {
         /*
          * Set the scene
          */
+        gui.updateLCDDisplay("test", pane );
         Scene scene = new Scene(pane, width, height);
 
 
