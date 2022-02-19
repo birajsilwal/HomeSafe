@@ -8,6 +8,7 @@ public class MainController extends Application {
     public static void main(String[] args) {
         System.out.println("hello");
         System.out.println("Hey can you accept my change?");
+        System.out.println("ruby is here");
         launch(args);
     }
 
