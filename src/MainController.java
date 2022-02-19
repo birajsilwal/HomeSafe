@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 public class MainController extends Application {
     public static void main(String[] args) {
         System.out.println("hello");
+        System.out.println("Hey can you accept my change?");
         System.out.println("Hello");
         launch(args);
     }
@@ -32,6 +33,9 @@ public class MainController extends Application {
          * Set the scene
          */
         Scene scene = new Scene(pane, width, height);
+
+
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }
