@@ -8,6 +8,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,6 +19,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class GUI {
+    private double lcdScreenX;
+    private double lcdScreenY;
+    private double lcdScreenWidth;
+    private double lcdScreenHeight;
+
+
     public Pane createSafeInterface(){
         double width  = 1000;
         double height = 680;
@@ -74,15 +84,53 @@ public class GUI {
         blackBackground.setY(grayBackground.getY()+10);
         vbox.setTranslateX(blackBackground.getX());
         vbox.setTranslateY(blackBackground.getY() + lcdDisplayHeight);
+
+        lcdScreenX = blackBackground.getX();
+        lcdScreenY = blackBackground.getY();
+        lcdScreenWidth = blackBackground.getWidth();
+        lcdScreenHeight = blackBackground.getHeight();
+
         /*
          * Setup the root of the scene graph
          */
         Label text = new Label ("hello");
 
         BorderPane keypadPane = new BorderPane(text);
-        keypadPane.getChildren().addAll(grayBackground,blackBackground,vbox);
+        keypadPane.getChildren().addAll(grayBackground, blackBackground,vbox);
         Pane pane = new Pane(text);
         pane.getChildren().addAll(background, safeCloseView, keypadPane);
         return pane;
     }
+
+    public void updateLCDDisplay(String input, Pane pane){
+        //Create Display Backlight
+        Rectangle backlight = new Rectangle(lcdScreenWidth - 20, 0.2*lcdScreenHeight);
+        backlight.setX(lcdScreenX + 10);
+        backlight.setY(lcdScreenY + 10);
+
+        //Create Text for Display
+        Text display = new Text();
+        Font font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 24);
+        display.setFont(font);
+        display.setX(lcdScreenX + 30);
+        display.setY(lcdScreenY + 0.15 * lcdScreenHeight);
+        display.setFill(Color.GHOSTWHITE);
+
+
+        if(input.equals("off")){ // when display is off
+            backlight.setFill(Color.BLACK);
+            display.setText("");
+        }else if (input.equals("nothing")){ // when safe is on but display shows nothing
+            backlight.setFill(Color.BLUE);
+            display.setText("");
+        }else{
+            backlight.setFill(Color.BLUE);
+            display.setText(input);
+        }
+
+        pane.getChildren().addAll(backlight, display);
+
+    }
+
+
 }
