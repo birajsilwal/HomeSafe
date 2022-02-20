@@ -26,7 +26,7 @@ public class MainController extends Application {
         System.out.println("Hey can you accept my change?");
         System.out.println("ruby is here");
         System.out.println("hey what's up");
-
+        System.out.println("Please make me a contributer!");
         launch(args);
     }
 
