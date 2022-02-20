@@ -29,6 +29,7 @@ public class MainController extends Application {
          */
         Label text = new Label ("hello");
         Pane pane = new Pane(text);
+        System.out.println("Joe");
 
         /*
          * Example of SoundSensor for testing. Uncomment to use.
