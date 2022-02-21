@@ -19,6 +19,7 @@ public class MainController extends Application {
     public static void main(String[] args) {
         System.out.println("hello");
         System.out.println("Hey can you accept my change?");
+        System.out.println("Check");
         System.out.println("ruby is here!!!!!!!!!!!!1");
         System.out.println("ruby is here");
         System.out.println("nemo was here123 d");
