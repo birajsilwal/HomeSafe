@@ -1,9 +1,6 @@
 package Sensors.PowerSensor;
 
-
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Rectangle;
 
 public class PowerSensor {
     private boolean _hasPower;

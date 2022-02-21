@@ -16,7 +16,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import org.w3c.dom.css.Rect;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
