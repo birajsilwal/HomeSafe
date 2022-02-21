@@ -19,7 +19,7 @@ public class PowerSensor {
     }
 
     public Ellipse getView(){
-        this.display = new Ellipse(15, 20);
+        this.display = new Ellipse(8, 10);
         this.display.setVisible(this._hasPower);
         return this.display;
     }

@@ -60,10 +60,12 @@ public class GUI {
             button.setPrefSize(imgSize,imgSize);
             button.setStyle("-fx-background-color: #000000");
             button.setOnAction(e -> {
-                try {
-                    this.soundSensor.playSound(Sound.Beep);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                if(powerSensor.hasPower()) {
+                    try {
+                        this.soundSensor.playSound(Sound.Beep);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
             imgArray.add(button);
@@ -135,16 +137,18 @@ public class GUI {
             }
         });
 
+        // I don't know if we want this but I added it anyways.
+        // Feel free to remove.
         Ellipse powerDisplay = this.powerSensor.getView();
         powerDisplay.setFill(Color.RED);
-        powerDisplay.setTranslateX(330);
-        powerDisplay.setTranslateY(240);
+        powerDisplay.setTranslateX(645);
+        powerDisplay.setTranslateY(534);
 
         ImageView soundDisplay = soundSensor.getView();
         soundDisplay.setTranslateX(0);
         soundDisplay.setTranslateY(0);
 
-        pane.getChildren().addAll(background, safeCloseView, keypadPane, onOffBtn, powerDisplay, soundDisplay);
+        pane.getChildren().addAll(background, safeCloseView, keypadPane, powerDisplay, onOffBtn, soundDisplay);
         return pane;
     }
 
