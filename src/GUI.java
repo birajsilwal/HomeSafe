@@ -2,7 +2,6 @@ import Sensors.PowerSensor.PowerSensor;
 import Sensors.SoundSensor.Sound;
 import Sensors.SoundSensor.SoundSensor;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -42,8 +41,17 @@ public class GUI {
     }
 
 
+    private String getPrevNumber(){
+        String listString = "";
+        for(int i = 0; i < keyInputArrayList.size(); i++){
+            listString += keyInputArrayList.get(i);
+        }
+        return listString;
+    }
+
 
     public Pane createSafeInterface() {
+        Pane pane = new Pane();
         keyInputArrayList = new ArrayList<>();
 
         //get button images
@@ -110,36 +118,47 @@ public class GUI {
         //Handle key pressed
         buttonArrayList.get(0).setOnMouseClicked(event -> {
             keyInputArrayList.add(0);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(1).setOnMouseClicked(event -> {
             keyInputArrayList.add(1);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(2).setOnMouseClicked(event -> {
             keyInputArrayList.add(2);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(3).setOnMouseClicked(event -> {
             keyInputArrayList.add(3);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(4).setOnMouseClicked(event -> {
             keyInputArrayList.add(4);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(5).setOnMouseClicked(event -> {
             keyInputArrayList.add(5);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(6).setOnMouseClicked(event -> {
             keyInputArrayList.add(6);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(7).setOnMouseClicked(event -> {
             keyInputArrayList.add(7);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(8).setOnMouseClicked(event -> {
             keyInputArrayList.add(8);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(9).setOnMouseClicked(event -> {
             keyInputArrayList.add(9);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(10).setOnMouseClicked(event -> {
-            keyInputArrayList.remove(buttonArrayList.size()-1);
+            keyInputArrayList.remove(keyInputArrayList.size()-1);
+            updateLCDDisplay(getPrevNumber(), pane);
         });
         buttonArrayList.get(11).setOnMouseClicked(event -> {
             MainController mc = new MainController();
@@ -182,12 +201,10 @@ public class GUI {
         /*
          * Setup the root of the scene graph
          */
-        Label text = new Label ("hello");
 
-        BorderPane keypadPane = new BorderPane(text);
+
+        BorderPane keypadPane = new BorderPane();
         keypadPane.getChildren().addAll(grayBackground, blackBackground,vbox);
-        Pane pane = new Pane(text);
-        pane.getChildren().addAll(background, safeCloseView, keypadPane, scannerButton);
 
         Rectangle onOffBtn = new Rectangle(50,50);
         onOffBtn.setTranslateX(620);
@@ -216,7 +233,6 @@ public class GUI {
         ImageView soundDisplay = soundSensor.getView();
         soundDisplay.setTranslateX(0);
         soundDisplay.setTranslateY(0);
-
         pane.getChildren().addAll(background, safeCloseView, keypadPane, powerDisplay, onOffBtn, soundDisplay);
         return pane;
     }
@@ -271,6 +287,4 @@ public class GUI {
         //Add to Panel
         pane.getChildren().add(scannerAnimationView);
     }
-
-
 }
