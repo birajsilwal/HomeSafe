@@ -50,6 +50,26 @@ public class GUI {
             imgArray.add(button);
         }
 
+        //Add fingerprint scanner button
+        String path = "Resources/Images/ScannerButton.png";
+        try {
+            stream = new FileInputStream(
+                    path);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Image scannerImage = new Image(stream);
+        ImageView scannerImageView = new ImageView(scannerImage);
+        scannerImageView.setFitWidth(57);
+        scannerImageView.setFitHeight(100);
+        Button scannerButton = new Button();
+        scannerButton.setPrefSize(50,100);
+        scannerButton.setLayoutX(605);
+        scannerButton.setLayoutY(340);
+        scannerButton.setGraphic(scannerImageView);
+        scannerButton.setStyle("-fx-background-color: #555659");
+
+
         //Get safe image
         try {
             stream = new FileInputStream(
@@ -98,7 +118,7 @@ public class GUI {
         BorderPane keypadPane = new BorderPane(text);
         keypadPane.getChildren().addAll(grayBackground, blackBackground,vbox);
         Pane pane = new Pane(text);
-        pane.getChildren().addAll(background, safeCloseView, keypadPane);
+        pane.getChildren().addAll(background, safeCloseView, keypadPane, scannerButton);
         return pane;
     }
 
@@ -130,6 +150,27 @@ public class GUI {
 
         pane.getChildren().addAll(backlight, display);
 
+    }
+
+    public void animateFingerPrint(Pane pane){
+        //Get gif of fingerprint scanner
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(
+                    "Resources/Images/Finger-Print.gif");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        //Create ImageView and set location
+        Image scannerAnimation = new Image(stream, 500, 500, true, false);
+        ImageView scannerAnimationView = new ImageView(scannerAnimation);
+        scannerAnimationView.setX(250);
+        scannerAnimationView.setY(100);
+        scannerAnimationView.setViewOrder(-1);
+
+        //Add to Panel
+        pane.getChildren().add(scannerAnimationView);
     }
 
 
