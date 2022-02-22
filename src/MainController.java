@@ -3,10 +3,6 @@ import Sensors.SoundSensor.SoundSensor;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-<<<<<<< HEAD
-import javafx.scene.canvas.Canvas;
-=======
->>>>>>> Joseph
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -69,6 +65,7 @@ public class MainController extends Application {
          * Set the scene
          */
         gui.updateLCDDisplay("test", pane );
+        gui.animate
         Scene scene = new Scene(pane, width, height);
 
 
