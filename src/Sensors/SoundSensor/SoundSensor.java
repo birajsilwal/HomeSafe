@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 
 public class SoundSensor{
     private ImageView view;
+    private Sound recentSound;
 
     public SoundSensor(){
         this.view = new ImageView();
@@ -28,10 +29,15 @@ public class SoundSensor{
         if (f == null){
             throw new FileNotFoundException("No media file found for " + s.toString());
         }
+        this.recentSound = s;
         AudioClip audio = new AudioClip(f.toURI().toURL().toString());
         audio.play();
         Thread t = new Thread(() -> {
             while (audio.isPlaying()) {
+                if(s != recentSound ){
+                    audio.stop();
+                    return;
+                }
                 this.view.setImage(SoundImage.getOnImage());
                 try {
                     Thread.sleep(500);
