@@ -23,8 +23,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class GUI {
-    private double width  = 1000;
-    private double height = 680;
+    private final double width  = 1000;
+    private final double height = 680;
     private double lcdScreenX;
     private double lcdScreenY;
     private double lcdScreenWidth;

@@ -51,7 +51,7 @@ public class MainController extends Application {
         primaryStage.show();
     }
 
-    //Get all the keys user presses before hitting 'Enter'
+    //Get all the keys user presses before pressing 'Enter'
     public void setPassword(ArrayList<Integer> pw){
         password = pw;
         for (int i = 0; i < password.size(); i++) {
