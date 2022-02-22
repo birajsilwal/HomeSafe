@@ -20,6 +20,8 @@ public class MainController extends Application {
         System.out.println("ruby is here");
         System.out.println("nemo was here123 d");
         System.out.println("no");
+        System.out.println("hey what's up");
+        System.out.println("Please make me a contributer!");
         launch(args);
     }
 
