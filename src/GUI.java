@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class GUI {
+    private double width  = 1000;
+    private double height = 680;
     private double lcdScreenX;
     private double lcdScreenY;
     private double lcdScreenWidth;
@@ -31,19 +33,22 @@ public class GUI {
     private SoundSensor soundSensor;
     private PowerSensor powerSensor;
 
+    private ArrayList<Button> buttonArrayList;
+    public ArrayList<Integer> keyInputArrayList;
+
     public GUI(SoundSensor soundSensor, PowerSensor powerSensor){
         this.soundSensor = soundSensor;
         this.powerSensor = powerSensor;
     }
 
 
+
     public Pane createSafeInterface() {
-        double width  = 1000;
-        double height = 680;
+        keyInputArrayList = new ArrayList<>();
 
         //get button images
         int imgSize = 55;
-        ArrayList<Button> imgArray = new ArrayList<>();
+        buttonArrayList = new ArrayList<>();
         InputStream stream = null;
         for (int count = 0; count < 12; count++){
             String path = "Resources/Images/bt" + count + ".PNG";
@@ -68,7 +73,7 @@ public class GUI {
                     }
                 }
             });
-            imgArray.add(button);
+            buttonArrayList.add(button);
         }
 
         //Get safe image
@@ -81,14 +86,57 @@ public class GUI {
         Image safeCloseImg = new Image(stream, width, height, false, false);
         ImageView safeCloseView = new ImageView(safeCloseImg);
 
+
+        //Handle key pressed
+        buttonArrayList.get(0).setOnMouseClicked(event -> {
+            keyInputArrayList.add(0);
+        });
+        buttonArrayList.get(1).setOnMouseClicked(event -> {
+            keyInputArrayList.add(1);
+        });
+        buttonArrayList.get(2).setOnMouseClicked(event -> {
+            keyInputArrayList.add(2);
+        });
+        buttonArrayList.get(3).setOnMouseClicked(event -> {
+            keyInputArrayList.add(3);
+        });
+        buttonArrayList.get(4).setOnMouseClicked(event -> {
+            keyInputArrayList.add(4);
+        });
+        buttonArrayList.get(5).setOnMouseClicked(event -> {
+            keyInputArrayList.add(5);
+        });
+        buttonArrayList.get(6).setOnMouseClicked(event -> {
+            keyInputArrayList.add(6);
+        });
+        buttonArrayList.get(7).setOnMouseClicked(event -> {
+            keyInputArrayList.add(7);
+        });
+        buttonArrayList.get(8).setOnMouseClicked(event -> {
+            keyInputArrayList.add(8);
+        });
+        buttonArrayList.get(9).setOnMouseClicked(event -> {
+            keyInputArrayList.add(9);
+        });
+        buttonArrayList.get(10).setOnMouseClicked(event -> {
+            keyInputArrayList.remove(buttonArrayList.size()-1);
+        });
+        buttonArrayList.get(11).setOnMouseClicked(event -> {
+            MainController mc = new MainController();
+            mc.setPassword(keyInputArrayList);
+            keyInputArrayList.clear();
+        });
+
+
+
         HBox hbox1 = new HBox();
         HBox hbox2 = new HBox();
         HBox hbox3 = new HBox();
         HBox hbox4 = new HBox();
-        hbox1.getChildren().addAll(imgArray.get(1), imgArray.get(2), imgArray.get(3));
-        hbox2.getChildren().addAll(imgArray.get(4), imgArray.get(5), imgArray.get(6));
-        hbox3.getChildren().addAll(imgArray.get(7), imgArray.get(8), imgArray.get(9));
-        hbox4.getChildren().addAll(imgArray.get(10), imgArray.get(0), imgArray.get(11));
+        hbox1.getChildren().addAll(buttonArrayList.get(1), buttonArrayList.get(2), buttonArrayList.get(3));
+        hbox2.getChildren().addAll(buttonArrayList.get(4), buttonArrayList.get(5), buttonArrayList.get(6));
+        hbox3.getChildren().addAll(buttonArrayList.get(7), buttonArrayList.get(8), buttonArrayList.get(9));
+        hbox4.getChildren().addAll(buttonArrayList.get(10), buttonArrayList.get(0), buttonArrayList.get(11));
 
 
         VBox vbox = new VBox();

@@ -5,8 +5,12 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import Sensors.SoundSensor.SoundSensor;
 
+import java.util.ArrayList;
+
 
 public class MainController extends Application {
+
+    public ArrayList<Integer> password;
 
     public static void main(String[] args) {
         System.out.println("hello");
@@ -24,15 +28,20 @@ public class MainController extends Application {
         double width  = 1000;
         double height = 680;
 
+
+
         SoundSensor soundSensor = new SoundSensor();
         PowerSensor powerSensor = new PowerSensor();
         GUI gui = new GUI(soundSensor, powerSensor);
         Pane pane = new Pane();
+
+
         pane = gui.createSafeInterface();
+
         /*
          * Set the scene
          */
-        gui.updateLCDDisplay("test", pane );
+        gui.updateLCDDisplay("test", pane);
 
         Scene scene = new Scene(pane, width, height);
 
@@ -40,5 +49,14 @@ public class MainController extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    //Get all the keys user presses before hitting 'Enter'
+    public void setPassword(ArrayList<Integer> pw){
+        password = pw;
+        for (int i = 0; i < password.size(); i++) {
+            System.out.print(password.get(i));
+        }
+        System.out.println();
     }
 }
