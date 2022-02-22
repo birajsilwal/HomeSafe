@@ -1,3 +1,6 @@
+import Sensors.PowerSensor.PowerSensor;
+import Sensors.SoundSensor.Sound;
+import Sensors.SoundSensor.SoundSensor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -7,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -19,19 +23,32 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class GUI {
+    private final double width  = 1000;
+    private final double height = 680;
     private double lcdScreenX;
     private double lcdScreenY;
     private double lcdScreenWidth;
     private double lcdScreenHeight;
 
+    private SoundSensor soundSensor;
+    private PowerSensor powerSensor;
 
-    public Pane createSafeInterface(){
-        double width  = 1000;
-        double height = 680;
+    private ArrayList<Button> buttonArrayList;
+    public ArrayList<Integer> keyInputArrayList;
+
+    public GUI(SoundSensor soundSensor, PowerSensor powerSensor){
+        this.soundSensor = soundSensor;
+        this.powerSensor = powerSensor;
+    }
+
+
+
+    public Pane createSafeInterface() {
+        keyInputArrayList = new ArrayList<>();
 
         //get button images
         int imgSize = 55;
-        ArrayList<Button> imgArray = new ArrayList<>();
+        buttonArrayList = new ArrayList<>();
         InputStream stream = null;
         for (int count = 0; count < 12; count++){
             String path = "Resources/Images/bt" + count + ".PNG";
@@ -47,7 +64,16 @@ public class GUI {
             button.setGraphic(view);
             button.setPrefSize(imgSize,imgSize);
             button.setStyle("-fx-background-color: #000000");
-            imgArray.add(button);
+            button.setOnAction(e -> {
+                if(powerSensor.hasPower()) {
+                    try {
+                        this.soundSensor.playSound(Sound.Beep);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+            buttonArrayList.add(button);
         }
 
         //Add fingerprint scanner button
@@ -80,14 +106,57 @@ public class GUI {
         Image safeCloseImg = new Image(stream, width, height, false, false);
         ImageView safeCloseView = new ImageView(safeCloseImg);
 
+
+        //Handle key pressed
+        buttonArrayList.get(0).setOnMouseClicked(event -> {
+            keyInputArrayList.add(0);
+        });
+        buttonArrayList.get(1).setOnMouseClicked(event -> {
+            keyInputArrayList.add(1);
+        });
+        buttonArrayList.get(2).setOnMouseClicked(event -> {
+            keyInputArrayList.add(2);
+        });
+        buttonArrayList.get(3).setOnMouseClicked(event -> {
+            keyInputArrayList.add(3);
+        });
+        buttonArrayList.get(4).setOnMouseClicked(event -> {
+            keyInputArrayList.add(4);
+        });
+        buttonArrayList.get(5).setOnMouseClicked(event -> {
+            keyInputArrayList.add(5);
+        });
+        buttonArrayList.get(6).setOnMouseClicked(event -> {
+            keyInputArrayList.add(6);
+        });
+        buttonArrayList.get(7).setOnMouseClicked(event -> {
+            keyInputArrayList.add(7);
+        });
+        buttonArrayList.get(8).setOnMouseClicked(event -> {
+            keyInputArrayList.add(8);
+        });
+        buttonArrayList.get(9).setOnMouseClicked(event -> {
+            keyInputArrayList.add(9);
+        });
+        buttonArrayList.get(10).setOnMouseClicked(event -> {
+            keyInputArrayList.remove(buttonArrayList.size()-1);
+        });
+        buttonArrayList.get(11).setOnMouseClicked(event -> {
+            MainController mc = new MainController();
+            mc.setPassword(keyInputArrayList);
+            keyInputArrayList.clear();
+        });
+
+
+
         HBox hbox1 = new HBox();
         HBox hbox2 = new HBox();
         HBox hbox3 = new HBox();
         HBox hbox4 = new HBox();
-        hbox1.getChildren().addAll(imgArray.get(1), imgArray.get(2), imgArray.get(3));
-        hbox2.getChildren().addAll(imgArray.get(4), imgArray.get(5), imgArray.get(6));
-        hbox3.getChildren().addAll(imgArray.get(7), imgArray.get(8), imgArray.get(9));
-        hbox4.getChildren().addAll(imgArray.get(10), imgArray.get(0), imgArray.get(11));
+        hbox1.getChildren().addAll(buttonArrayList.get(1), buttonArrayList.get(2), buttonArrayList.get(3));
+        hbox2.getChildren().addAll(buttonArrayList.get(4), buttonArrayList.get(5), buttonArrayList.get(6));
+        hbox3.getChildren().addAll(buttonArrayList.get(7), buttonArrayList.get(8), buttonArrayList.get(9));
+        hbox4.getChildren().addAll(buttonArrayList.get(10), buttonArrayList.get(0), buttonArrayList.get(11));
 
 
         VBox vbox = new VBox();
@@ -118,7 +187,37 @@ public class GUI {
         BorderPane keypadPane = new BorderPane(text);
         keypadPane.getChildren().addAll(grayBackground, blackBackground,vbox);
         Pane pane = new Pane(text);
-        pane.getChildren().addAll(background, safeCloseView, keypadPane, scannerButton);
+
+        Rectangle onOffBtn = new Rectangle(50,50);
+        onOffBtn.setTranslateX(620);
+        onOffBtn.setTranslateY(510);
+        onOffBtn.setFill(Color.TRANSPARENT);
+        onOffBtn.setOnMouseClicked(e -> {
+            this.powerSensor.setPower(!this.powerSensor.hasPower());
+            try {
+                if (this.powerSensor.hasPower()) {
+                    this.soundSensor.playSound(Sound.On);
+                } else {
+                    this.soundSensor.playSound(Sound.Off);
+                }
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+        });
+
+        // I don't know if we want this but I added it anyways.
+        // Feel free to remove.
+        Ellipse powerDisplay = this.powerSensor.getView();
+        powerDisplay.setFill(Color.RED);
+        powerDisplay.setTranslateX(645);
+        powerDisplay.setTranslateY(534);
+
+        ImageView soundDisplay = soundSensor.getView();
+        soundDisplay.setTranslateX(0);
+        soundDisplay.setTranslateY(0);
+
+        pane.getChildren().addAll(background, safeCloseView, keypadPane, powerDisplay, onOffBtn, soundDisplay, scannerButton);
+
         return pane;
     }
 

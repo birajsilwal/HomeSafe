@@ -1,7 +1,5 @@
-import Sensors.SoundSensor.Sound;
-import Sensors.SoundSensor.SoundSensor;
+import Sensors.PowerSensor.PowerSensor;
 import javafx.application.Application;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,41 +9,40 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import Sensors.SoundSensor.SoundSensor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
+
 public class MainController extends Application {
-    private SoundSensor soundSensor;
+
+    public ArrayList<Integer> password;
+
     public static void main(String[] args) {
         System.out.println("hello");
         System.out.println("Hey can you accept my change?");
+        System.out.println("Check");
+        System.out.println("ruby is here!!!!!!!!!!!!1");
         System.out.println("ruby is here");
         System.out.println("hey what's up");
         System.out.println("Please make me a contributer!");
+        System.out.println("nemo was here123 d");
+        System.out.println("no");
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        /*
-         * Setup
-         */
-        double width  = 500;
-        double height = 500;
-        primaryStage.setTitle("HomeSafe");
+        double width  = 1000;
+        double height = 680;
 
-        /*
-         * Setup the root of the scene graph
-         */
-        Label text = new Label ("hello");
-        Pane pane = new Pane(text);
-        System.out.println("Joe");
+        SoundSensor soundSensor = new SoundSensor();
+        PowerSensor powerSensor = new PowerSensor();
+        GUI gui = new GUI(soundSensor, powerSensor);
+        Pane pane = new Pane();
 
         /*
          * Example of SoundSensor for testing. Uncomment to use.
@@ -61,11 +58,14 @@ public class MainController extends Application {
 //        box.getChildren().addAll(on, off, beep, this.soundSensor.getView());
 //        pane.getChildren().add(box);
 
+        pane = gui.createSafeInterface();
+
         /*
          * Set the scene
          */
-        gui.updateLCDDisplay("test", pane );
-        gui.animate
+
+        gui.updateLCDDisplay("test", pane);
+
         Scene scene = new Scene(pane, width, height);
 
 
@@ -74,19 +74,12 @@ public class MainController extends Application {
         primaryStage.show();
     }
 
-    private Button SoundButtonExample(Sound s, String text){
-        Button b = new Button(text);
-        b.setOnAction(e -> {
-            try {
-                this.soundSensor.playSound(s);
-                /*
-                You can put other stuff here for the button to do. This is just an example.
-                 */
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-        b.setFocusTraversable(false);
-        return b;
+    //Get all the keys user presses before pressing 'Enter'
+    public void setPassword(ArrayList<Integer> pw){
+        password = pw;
+        for (int i = 0; i < password.size(); i++) {
+            System.out.print(password.get(i));
+        }
+        System.out.println();
     }
 }
