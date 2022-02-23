@@ -1,3 +1,6 @@
+import Sensors.PowerSensor.PowerSensor;
+import Sensors.SoundSensor.Sound;
+import Sensors.SoundSensor.SoundSensor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -7,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -24,8 +28,16 @@ public class GUI {
     private double lcdScreenWidth;
     private double lcdScreenHeight;
 
+    private SoundSensor soundSensor;
+    private PowerSensor powerSensor;
 
-    public Pane createSafeInterface(){
+    public GUI(SoundSensor soundSensor, PowerSensor powerSensor){
+        this.soundSensor = soundSensor;
+        this.powerSensor = powerSensor;
+    }
+
+
+    public Pane createSafeInterface() {
         double width  = 1000;
         double height = 680;
 
@@ -47,6 +59,15 @@ public class GUI {
             button.setGraphic(view);
             button.setPrefSize(imgSize,imgSize);
             button.setStyle("-fx-background-color: #000000");
+            button.setOnAction(e -> {
+                if(powerSensor.hasPower()) {
+                    try {
+                        this.soundSensor.playSound(Sound.Beep);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
             imgArray.add(button);
         }
 
@@ -98,7 +119,36 @@ public class GUI {
         BorderPane keypadPane = new BorderPane(text);
         keypadPane.getChildren().addAll(grayBackground, blackBackground,vbox);
         Pane pane = new Pane(text);
-        pane.getChildren().addAll(background, safeCloseView, keypadPane);
+
+        Rectangle onOffBtn = new Rectangle(50,50);
+        onOffBtn.setTranslateX(620);
+        onOffBtn.setTranslateY(510);
+        onOffBtn.setFill(Color.TRANSPARENT);
+        onOffBtn.setOnMouseClicked(e -> {
+            this.powerSensor.setPower(!this.powerSensor.hasPower());
+            try {
+                if (this.powerSensor.hasPower()) {
+                    this.soundSensor.playSound(Sound.On);
+                } else {
+                    this.soundSensor.playSound(Sound.Off);
+                }
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+        });
+
+        // I don't know if we want this but I added it anyways.
+        // Feel free to remove.
+        Ellipse powerDisplay = this.powerSensor.getView();
+        powerDisplay.setFill(Color.RED);
+        powerDisplay.setTranslateX(645);
+        powerDisplay.setTranslateY(534);
+
+        ImageView soundDisplay = soundSensor.getView();
+        soundDisplay.setTranslateX(0);
+        soundDisplay.setTranslateY(0);
+
+        pane.getChildren().addAll(background, safeCloseView, keypadPane, powerDisplay, onOffBtn, soundDisplay);
         return pane;
     }
 
