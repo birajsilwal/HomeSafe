@@ -13,16 +13,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.Scanner;
+
+
 public class MainController extends Application {
     private SoundSensor soundSensor;
 
     public static void main(String[] args) {
-        System.out.println("hello");
-        System.out.println("Hey can you accept my change?");
-        System.out.println("Check");
-        System.out.println("ruby is here!!!!!!!!!!!!1");
-        System.out.println("ruby is here");
-        System.out.println("nemo was here123 d");
+        InputController inputController = new InputController();
         launch(args);
     }
 
@@ -59,10 +57,11 @@ public class MainController extends Application {
 
         Scene scene = new Scene(pane, width, height);
 
-
-
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        System.out.println("Listening");
+        gui.listenKeyPress(pane);
     }
 
 
