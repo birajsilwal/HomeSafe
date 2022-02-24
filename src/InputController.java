@@ -17,11 +17,9 @@ public class InputController{
     AuthenticationManager authenticationManager;
     SecurityManager  securityManager;
 
-    public InputController(GUI gui, Pane pane, AuthenticationManager authenticationManager, SecurityManager securityManager) {
+    public InputController(GUI gui, Pane pane) {
         this.gui = gui;
         this.pane = pane;
-        this.authenticationManager = authenticationManager;
-        this.securityManager = securityManager;
     }
 
     public void readKey(String s){
@@ -32,8 +30,9 @@ public class InputController{
     }
 
     public void checkPassword() {
-        boolean isCorrect = authenticationManager.verifyPassword(entered_key);
-        if (isCorrect){
+//        boolean isCorrect = authenticationManager.verifyPassword(entered_key);
+//        if (isCorrect){
+        if (true){
             displayForTwoSeconds("Authorized",pane);
             // Let know Security Manager that the system is authorized
             keyPressDisable = true;
@@ -73,7 +72,7 @@ public class InputController{
             }
         }
         else if(temp_setup_password.equals(password)){
-            authenticationManager.setSavedPassword(password);
+//            authenticationManager.setSavedPassword(password);
             System.out.println("Saved password is: "+password);
             displayForTwoSeconds("Saved Password",pane);
             state = STATE.NORMAL;
