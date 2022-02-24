@@ -18,6 +18,7 @@ public class WebsiteSimulator {
     public void setSerialToSetUp(String serial, String setup){
         serialToSetUp.put(serial,setup);
     }
+
     public String getSetUpPin(String phone){
         String serial = serialToPhoneNumber.get(phone);
         return serialToSetUp.get(serial);

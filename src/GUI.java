@@ -26,7 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class GUI extends InputController{
+public class GUI{
     private final double width  = 1000;
     private final double height = 680;
     private double lcdScreenX;
@@ -43,7 +43,6 @@ public class GUI extends InputController{
     }
 
     ArrayList<Button> imgArray = new ArrayList<>();
-    private String displayText = "";
 
     public Pane createSafeInterface() {
         Pane pane = new Pane();
@@ -74,7 +73,7 @@ public class GUI extends InputController{
                     }
                 }
             });
-            //buttonArrayList.add(button);
+            imgArray.add(button);
         }
 
         //Add fingerprint scanner button
@@ -185,7 +184,8 @@ public class GUI extends InputController{
         //Create Text for Display
         Text display = new Text();
         Font font;
-        if (displayText.length()<7) {
+        String displayText = "";
+        if (input.length()<7) {
              font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 24);
         }
         else font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 12);
@@ -229,191 +229,9 @@ public class GUI extends InputController{
 
         //Add to Panel
         pane.getChildren().add(scannerAnimationView);
-        boolean keyPressDisable = true;
-
     }
-    boolean keyPressDisable = true;
 
-    public void listenKeyPress(Pane pane) {
-        AnimationTimer timer = new AnimationTimer() {
-            private long start;
-            @Override
-            public void handle(long now) {
-                if (start==0L) start = now;
-                else{
-                    if ((now-start>=10_000_000_000L)){
-                        System.out.println("Came here");
-                        displayForThreeSeconds("TimeOut",pane);
-                        keyPressDisable = true;
-                        this.stop();
-                    }
-                    else{
-                        imgArray.get(0).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "0";
-                                    readKey("0");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(1).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "1";
-                                    readKey("1");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(2).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "2";
-                                    readKey("2");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(3).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "3";
-                                    readKey("3");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(4).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if (!keyPressDisable) {
-                                    displayText += "4";
-                                    readKey("4");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(5).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "5";
-                                    readKey("5");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(6).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "6";
-                                    readKey("6");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(7).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "7";
-                                    readKey("7");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(8).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "8";
-                                    readKey("8");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(9).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "9";
-                                    readKey("9");
-                                    updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        imgArray.get(10).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                displayText = displayText.substring(0,displayText.length()-1);
-                                entered_password = entered_password.substring(0,entered_password.length()-1);
-                                updateLCDDisplay(displayText,pane);
-                                start = now;
-                            }
-                        });
-                        imgArray.get(11).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if (displayText.length()==6){
-                                    System.out.println(displayText);
-                                    System.out.println("Length 4 condition passed");
-                                    if (checkPassword()){
-                                        displayForThreeSeconds("Authorized", pane);
-                                        keyPressDisable = true;
-                                    }
-                                    else {
-                                        displayForThreeSeconds("Re-enter Password",pane);
-                                        start = now;
-                                    }
-                                }
-                                else if (displayText.length()==20){
-                                    System.out.println("Length 4 condition failed");
-                                    displayText = "";
-                                    checkResetPin();
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-
-            private void displayForThreeSeconds(String message, Pane pane) {
-                displayText = message;
-                updateLCDDisplay(displayText,pane);
-                entered_password = "";
-                AnimationTimer timer1 = new AnimationTimer() {
-                    private long start1;
-                    @Override
-                    public void handle(long l) {
-                        if (start1==0L) start1 = l;
-                        else{
-                            if (l-start1>2_000_000_000){
-                                displayText = "";
-                                updateLCDDisplay(displayText,pane);
-                                this.stop();
-                            }
-                        }
-                    }
-                };
-                timer1.start();
-            }
-        };
-        timer.start();
+    public ArrayList<Button> getButtons(){
+        return imgArray;
     }
 }
