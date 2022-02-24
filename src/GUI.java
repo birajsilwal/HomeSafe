@@ -1,3 +1,9 @@
+import Sensors.PowerSensor.PowerSensor;
+import Sensors.SoundSensor.Sound;
+import Sensors.SoundSensor.SoundSensor;
+import javafx.animation.AnimationTimer;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -68,7 +74,7 @@ public class GUI extends InputController{
                     }
                 }
             });
-            buttonArrayList.add(button);
+            //buttonArrayList.add(button);
         }
 
         //Add fingerprint scanner button
@@ -213,7 +219,6 @@ public class GUI extends InputController{
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    boolean keyPressDisable = true;
 
         //Create ImageView and set location
         Image scannerAnimation = new Image(stream, 500, 500, true, false);
@@ -224,9 +229,12 @@ public class GUI extends InputController{
 
         //Add to Panel
         pane.getChildren().add(scannerAnimationView);
+        boolean keyPressDisable = true;
+
     }
+    boolean keyPressDisable = true;
+
     public void listenKeyPress(Pane pane) {
-        keyPressDisable = false;
         AnimationTimer timer = new AnimationTimer() {
             private long start;
             @Override
