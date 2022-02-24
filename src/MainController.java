@@ -20,7 +20,6 @@ public class MainController extends Application {
     private SoundSensor soundSensor;
 
     public static void main(String[] args) {
-        InputController inputController = new InputController();
         launch(args);
     }
 
@@ -28,8 +27,6 @@ public class MainController extends Application {
     public void start(Stage primaryStage) throws Exception {
         double width  = 1000;
         double height = 680;
-
-
 
         SoundSensor soundSensor = new SoundSensor();
         PowerSensor powerSensor = new PowerSensor();
@@ -66,8 +63,11 @@ public class MainController extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        System.out.println("Listening");
-        gui.listenKeyPress(pane);
+        AuthenticationManager authenticationManager = new AuthenticationManager();
+        SecurityManager securityManager = new SecurityManager();
+        InputController inputController = new InputController(gui,pane, authenticationManager, securityManager);
+
+        inputController.startSetUp();
     }
 
 

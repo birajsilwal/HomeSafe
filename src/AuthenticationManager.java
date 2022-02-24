@@ -1,5 +1,5 @@
  class AuthenticationManager {
-    private static String savedPassword = "123456";
+    private static String savedPassword = "";
     private String fingerPrint = "";
 
     public void setSavedPassword(String s){
@@ -10,7 +10,7 @@
     };
 
     public  boolean verifyPassword(String entered_password){
-        System.out.println(savedPassword);
+        System.out.println(savedPassword + " From authentication manager");
         return entered_password.equals(savedPassword);
     };
     //public  boolean verifyFingerPrint(String fingerPrint);
