@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class GUI extends InputController{
+    private final double width  = 1000;
+    private final double height = 680;
     private double lcdScreenX;
     private double lcdScreenY;
     private double lcdScreenWidth;
@@ -44,8 +46,7 @@ public class GUI extends InputController{
     private String displayText = "";
 
     public Pane createSafeInterface() {
-        double width  = 1000;
-        double height = 680;
+        Pane pane = new Pane();
 
         //get button images
         int imgSize = 55;
@@ -73,8 +74,28 @@ public class GUI extends InputController{
                     }
                 }
             });
-            imgArray.add(button);
+            //buttonArrayList.add(button);
         }
+
+        //Add fingerprint scanner button
+        String path = "Resources/Images/ScannerButton.png";
+        try {
+            stream = new FileInputStream(
+                    path);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Image scannerImage = new Image(stream);
+        ImageView scannerImageView = new ImageView(scannerImage);
+        scannerImageView.setFitWidth(57);
+        scannerImageView.setFitHeight(100);
+        Button scannerButton = new Button();
+        scannerButton.setPrefSize(50,100);
+        scannerButton.setLayoutX(605);
+        scannerButton.setLayoutY(340);
+        scannerButton.setGraphic(scannerImageView);
+        scannerButton.setStyle("-fx-background-color: #555659");
+
 
         //Get safe image
         try {
@@ -123,7 +144,6 @@ public class GUI extends InputController{
 
         BorderPane keypadPane = new BorderPane(text);
         keypadPane.getChildren().addAll(grayBackground, blackBackground,vbox);
-        Pane pane = new Pane(text);
 
         Rectangle onOffBtn = new Rectangle(50,50);
         onOffBtn.setTranslateX(620);
@@ -152,7 +172,6 @@ public class GUI extends InputController{
         ImageView soundDisplay = soundSensor.getView();
         soundDisplay.setTranslateX(0);
         soundDisplay.setTranslateY(0);
-
         pane.getChildren().addAll(background, safeCloseView, keypadPane, powerDisplay, onOffBtn, soundDisplay);
         return pane;
     }
@@ -191,10 +210,31 @@ public class GUI extends InputController{
 
     }
 
+    public void animateFingerPrint(Pane pane){
+        //Get gif of fingerprint scanner
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(
+                    "Resources/Images/Finger-Print.gif");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        //Create ImageView and set location
+        Image scannerAnimation = new Image(stream, 500, 500, true, false);
+        ImageView scannerAnimationView = new ImageView(scannerAnimation);
+        scannerAnimationView.setX(250);
+        scannerAnimationView.setY(100);
+        scannerAnimationView.setViewOrder(-1);
+
+        //Add to Panel
+        pane.getChildren().add(scannerAnimationView);
+        boolean keyPressDisable = true;
+
+    }
     boolean keyPressDisable = true;
 
     public void listenKeyPress(Pane pane) {
-        keyPressDisable = false;
         AnimationTimer timer = new AnimationTimer() {
             private long start;
             @Override
