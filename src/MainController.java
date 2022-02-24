@@ -27,8 +27,15 @@ public class MainController extends Application {
     public void start(Stage primaryStage) throws Exception {
         double width  = 1000;
         double height = 680;
-        GUI gui = new GUI();
+
+
+
+        SoundSensor soundSensor = new SoundSensor();
+        PowerSensor powerSensor = new PowerSensor();
+        GUI gui = new GUI(soundSensor, powerSensor);
         Pane pane = new Pane();
+
+
         pane = gui.createSafeInterface();
         /*
          * Set the scene
@@ -52,6 +59,8 @@ public class MainController extends Application {
 
 
         Scene scene = new Scene(pane, width, height);
+
+
 
         primaryStage.setScene(scene);
         primaryStage.show();

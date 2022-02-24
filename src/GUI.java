@@ -1,6 +1,3 @@
-import javafx.animation.AnimationTimer;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -11,6 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -23,16 +21,26 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class GUI extends InputController{
+    private final double width  = 1000;
+    private final double height = 680;
     private double lcdScreenX;
     private double lcdScreenY;
     private double lcdScreenWidth;
     private double lcdScreenHeight;
+
+    private SoundSensor soundSensor;
+    private PowerSensor powerSensor;
+
+    public GUI(SoundSensor soundSensor, PowerSensor powerSensor){
+        this.soundSensor = soundSensor;
+        this.powerSensor = powerSensor;
+    }
+
     ArrayList<Button> imgArray = new ArrayList<>();
     private String displayText = "";
 
-    public Pane createSafeInterface(){
-        double width  = 1000;
-        double height = 680;
+    public Pane createSafeInterface() {
+        Pane pane = new Pane();
 
         //get button images
         int imgSize = 55;
@@ -51,8 +59,37 @@ public class GUI extends InputController{
             button.setGraphic(view);
             button.setPrefSize(imgSize,imgSize);
             button.setStyle("-fx-background-color: #000000");
-            imgArray.add(button);
+            button.setOnAction(e -> {
+                if(powerSensor.hasPower()) {
+                    try {
+                        this.soundSensor.playSound(Sound.Beep);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+            buttonArrayList.add(button);
         }
+
+        //Add fingerprint scanner button
+        String path = "Resources/Images/ScannerButton.png";
+        try {
+            stream = new FileInputStream(
+                    path);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Image scannerImage = new Image(stream);
+        ImageView scannerImageView = new ImageView(scannerImage);
+        scannerImageView.setFitWidth(57);
+        scannerImageView.setFitHeight(100);
+        Button scannerButton = new Button();
+        scannerButton.setPrefSize(50,100);
+        scannerButton.setLayoutX(605);
+        scannerButton.setLayoutY(340);
+        scannerButton.setGraphic(scannerImageView);
+        scannerButton.setStyle("-fx-background-color: #555659");
+
 
         //Get safe image
         try {
@@ -101,8 +138,35 @@ public class GUI extends InputController{
 
         BorderPane keypadPane = new BorderPane(text);
         keypadPane.getChildren().addAll(grayBackground, blackBackground,vbox);
-        Pane pane = new Pane(text);
-        pane.getChildren().addAll(background, safeCloseView, keypadPane);
+
+        Rectangle onOffBtn = new Rectangle(50,50);
+        onOffBtn.setTranslateX(620);
+        onOffBtn.setTranslateY(510);
+        onOffBtn.setFill(Color.TRANSPARENT);
+        onOffBtn.setOnMouseClicked(e -> {
+            this.powerSensor.setPower(!this.powerSensor.hasPower());
+            try {
+                if (this.powerSensor.hasPower()) {
+                    this.soundSensor.playSound(Sound.On);
+                } else {
+                    this.soundSensor.playSound(Sound.Off);
+                }
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+        });
+
+        // I don't know if we want this but I added it anyways.
+        // Feel free to remove.
+        Ellipse powerDisplay = this.powerSensor.getView();
+        powerDisplay.setFill(Color.RED);
+        powerDisplay.setTranslateX(645);
+        powerDisplay.setTranslateY(534);
+
+        ImageView soundDisplay = soundSensor.getView();
+        soundDisplay.setTranslateX(0);
+        soundDisplay.setTranslateY(0);
+        pane.getChildren().addAll(background, safeCloseView, keypadPane, powerDisplay, onOffBtn, soundDisplay);
         return pane;
     }
 
@@ -140,8 +204,27 @@ public class GUI extends InputController{
 
     }
 
+    public void animateFingerPrint(Pane pane){
+        //Get gif of fingerprint scanner
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(
+                    "Resources/Images/Finger-Print.gif");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     boolean keyPressDisable = true;
 
+        //Create ImageView and set location
+        Image scannerAnimation = new Image(stream, 500, 500, true, false);
+        ImageView scannerAnimationView = new ImageView(scannerAnimation);
+        scannerAnimationView.setX(250);
+        scannerAnimationView.setY(100);
+        scannerAnimationView.setViewOrder(-1);
+
+        //Add to Panel
+        pane.getChildren().add(scannerAnimationView);
+    }
     public void listenKeyPress(Pane pane) {
         keyPressDisable = false;
         AnimationTimer timer = new AnimationTimer() {
