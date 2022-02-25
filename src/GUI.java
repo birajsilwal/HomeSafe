@@ -1,14 +1,10 @@
 import Sensors.PowerSensor.PowerSensor;
 import Sensors.SoundSensor.Sound;
 import Sensors.SoundSensor.SoundSensor;
-import javafx.animation.AnimationTimer;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -34,16 +30,22 @@ public class GUI{
     private double lcdScreenWidth;
     private double lcdScreenHeight;
 
-    private SoundSensor soundSensor;
-    private PowerSensor powerSensor;
+    private final SoundSensor soundSensor;
+    private final PowerSensor powerSensor;
 
     public GUI(SoundSensor soundSensor, PowerSensor powerSensor){
         this.soundSensor = soundSensor;
         this.powerSensor = powerSensor;
     }
 
-    ArrayList<Button> imgArray = new ArrayList<>();
+    ArrayList<Button> buttonArrayList = new ArrayList<>();
 
+
+    /**
+     * Create user's interface with safe's image,
+     * keypad, and fingerprint scanner
+     * @return pane
+     */
     public Pane createSafeInterface() {
         Pane pane = new Pane();
 
@@ -73,7 +75,7 @@ public class GUI{
                     }
                 }
             });
-            imgArray.add(button);
+            buttonArrayList.add(button);
         }
 
         //Add fingerprint scanner button
@@ -110,10 +112,10 @@ public class GUI{
         HBox hbox2 = new HBox();
         HBox hbox3 = new HBox();
         HBox hbox4 = new HBox();
-        hbox1.getChildren().addAll(imgArray.get(1), imgArray.get(2), imgArray.get(3));
-        hbox2.getChildren().addAll(imgArray.get(4), imgArray.get(5), imgArray.get(6));
-        hbox3.getChildren().addAll(imgArray.get(7), imgArray.get(8), imgArray.get(9));
-        hbox4.getChildren().addAll(imgArray.get(10), imgArray.get(0), imgArray.get(11));
+        hbox1.getChildren().addAll(buttonArrayList.get(1), buttonArrayList.get(2), buttonArrayList.get(3));
+        hbox2.getChildren().addAll(buttonArrayList.get(4), buttonArrayList.get(5), buttonArrayList.get(6));
+        hbox3.getChildren().addAll(buttonArrayList.get(7), buttonArrayList.get(8), buttonArrayList.get(9));
+        hbox4.getChildren().addAll(buttonArrayList.get(10), buttonArrayList.get(0), buttonArrayList.get(11));
 
 
         VBox vbox = new VBox();
@@ -161,8 +163,7 @@ public class GUI{
             }
         });
 
-        // I don't know if we want this but I added it anyways.
-        // Feel free to remove.
+
         Ellipse powerDisplay = this.powerSensor.getView();
         powerDisplay.setFill(Color.RED);
         powerDisplay.setTranslateX(645);
@@ -175,6 +176,13 @@ public class GUI{
         return pane;
     }
 
+
+
+    /**
+     * Display input on LCD display
+     * @param input input to display
+     * @param pane user's interface pane
+     */
     public void updateLCDDisplay(String input, Pane pane){
         //Create Display Backlight
         Rectangle backlight = new Rectangle(lcdScreenWidth - 20, 0.2*lcdScreenHeight);
@@ -207,7 +215,6 @@ public class GUI{
         }
 
         pane.getChildren().addAll(backlight, display);
-
     }
 
     public void animateFingerPrint(Pane pane){
@@ -231,7 +238,10 @@ public class GUI{
         pane.getChildren().add(scannerAnimationView);
     }
 
+    /**
+     * @return all the buttons
+     */
     public ArrayList<Button> getButtons(){
-        return imgArray;
+        return buttonArrayList;
     }
 }

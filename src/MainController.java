@@ -5,15 +5,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import Sensors.SoundSensor.Sound;
 import Sensors.SoundSensor.SoundSensor;
-import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-
-import java.util.Scanner;
 
 
 public class MainController extends Application {
@@ -24,7 +17,7 @@ public class MainController extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         double width  = 1000;
         double height = 680;
 
@@ -70,6 +63,12 @@ public class MainController extends Application {
     }
 
 
+    /**
+     * Get corresponding sound for buttons
+     * @param s sound
+     * @param text text corresponding with sounds
+     * @return button
+     */
     private Button SoundButtonExample(Sound s, String text){
         Button b = new Button(text);
         b.setOnAction(e -> {
