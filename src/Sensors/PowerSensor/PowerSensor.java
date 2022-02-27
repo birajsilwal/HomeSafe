@@ -2,9 +2,13 @@ package Sensors.PowerSensor;
 
 import javafx.scene.shape.Ellipse;
 
+import java.util.function.Consumer;
+
 public class PowerSensor {
     private boolean _hasPower;
     private Ellipse display;
+    private Consumer<Boolean> onAction;
+
     public PowerSensor(){
         this._hasPower = false;
     }
@@ -12,10 +16,18 @@ public class PowerSensor {
     public void setPower(boolean toggle){
         this._hasPower = toggle;
         this.display.setVisible(this._hasPower);
+        if (this.onAction != null) {
+            this.onAction.accept(this._hasPower);
+        }
+
     }
 
     public boolean hasPower(){
         return _hasPower;
+    }
+
+    public void setOnAction(Consumer<Boolean> r) {
+        this.onAction = r;
     }
 
     public Ellipse getView(){

@@ -24,31 +24,11 @@ public class MainController extends Application {
         SoundSensor soundSensor = new SoundSensor();
         PowerSensor powerSensor = new PowerSensor();
         GUI gui = new GUI(soundSensor, powerSensor);
-        Pane pane = new Pane();
 
-
-        pane = gui.createSafeInterface();
+        Pane pane = gui.createSafeInterface();
         /*
          * Set the scene
          */
-        gui.updateLCDDisplay("test", pane );
-
-
-        /*
-         * Example of SoundSensor for testing. Uncomment to use.
-         */
-        this.soundSensor = new SoundSensor();
-        VBox box = new VBox();
-        // Create buttons to play sounds
-        Button on = this.SoundButtonExample(Sound.On, "On");
-        Button off = this.SoundButtonExample(Sound.Off, "Off");
-        Button beep = this.SoundButtonExample(Sound.Beep, "Beep");
-        // To show icon all you have to do is get the view from the soundSensor object.
-        // The icon will change automatically
-        box.getChildren().addAll(on, off, beep, this.soundSensor.getView());
-        pane.getChildren().add(box);
-
-
         Scene scene = new Scene(pane, width, height);
 
 
@@ -57,9 +37,22 @@ public class MainController extends Application {
         primaryStage.show();
 
         SecurityManager securityManager = new SecurityManager();
-        InputController inputController = new InputController(gui,pane);
+        InputController inputController = new InputController(gui,pane, soundSensor);
+        powerSensor.setOnAction(value -> {
+            inputController.setKeyPressDisable(!value);
+            if (value) {
+                if (inputController.getState() == STATE.SETUP) {
+                    inputController.startSetUp();
+                } else {
+                    inputController.startAuthorization();
+                }
+            } else {
+                gui.updateLCDDisplay("off", pane);
+                inputController.clearInput();
+            }
+        });
 
-        inputController.startSetUp();
+        inputController.setKeyPressDisable(!powerSensor.hasPower());
     }
 
 

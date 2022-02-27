@@ -141,9 +141,7 @@ public class GUI{
         /*
          * Setup the root of the scene graph
          */
-        Label text = new Label ("hello");
-
-        BorderPane keypadPane = new BorderPane(text);
+        BorderPane keypadPane = new BorderPane();
         keypadPane.getChildren().addAll(grayBackground, blackBackground,vbox);
 
         Rectangle onOffBtn = new Rectangle(50,50);

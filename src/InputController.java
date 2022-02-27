@@ -1,3 +1,5 @@
+import Sensors.SoundSensor.Sound;
+import Sensors.SoundSensor.SoundSensor;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,10 +18,12 @@ public class InputController{
     STATE state = STATE.SETUP;
     AuthenticationManager authenticationManager;
     SecurityManager  securityManager;
+    private SoundSensor soundSensor;
 
-    public InputController(GUI gui, Pane pane) {
+    public InputController(GUI gui, Pane pane, SoundSensor soundSensor) {
         this.gui = gui;
         this.pane = pane;
+        this.soundSensor = soundSensor;
     }
 
     /**
@@ -130,7 +134,7 @@ public class InputController{
      * Ask user for set-up password
      */
     public void startSetUp() {
-        gui.updateLCDDisplay("Enter Set up Password",pane);
+        gui.updateLCDDisplay("Enter Set up Password", pane);
         listenKeyPress();
     }
 
@@ -173,120 +177,31 @@ public class InputController{
                     }
                     else{
                         start = now;
-                        gui.buttonArrayList.get(0).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "0";
-                                    readKey("0");
-                                    gui.updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(1).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "1";
-                                    readKey("1");
-                                    gui.updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(2).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "2";
-                                    readKey("2");
-                                    gui.updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(3).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "3";
-                                    readKey("3");
-                                    gui.updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(4).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
+                        for (int i = 0; i < 10; i++) {
+                            var index = i;
+                            gui.buttonArrayList.get(i).setOnAction(e -> {
                                 if (!keyPressDisable) {
-                                    displayText += "4";
-                                    readKey("4");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                    displayText += ("" + index);
+                                    readKey("" + index);
                                     gui.updateLCDDisplay(displayText, pane);
                                     start = now;
                                 }
-                            }
-                        });
-                        gui.buttonArrayList.get(5).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "5";
-                                    readKey("5");
-                                    gui.updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(6).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "6";
-                                    readKey("6");
-                                    gui.updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(7).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "7";
-                                    readKey("7");
-                                    gui.updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(8).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "8";
-                                    readKey("8");
-                                    gui.updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(9).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    displayText += "9";
-                                    readKey("9");
-                                    gui.updateLCDDisplay(displayText, pane);
-                                    start = now;
-                                }
-                            }
-                        });
+                            });
+                        }
                         gui.buttonArrayList.get(10).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if (!keyPressDisable) {
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     displayText = displayText.substring(0, displayText.length() - 1);
                                     entered_key = entered_key.substring(0, entered_key.length() - 1);
                                     gui.updateLCDDisplay(displayText, pane);
@@ -298,6 +213,11 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     if (state.equals(STATE.SETUP)) checkSetUpPassword(entered_key);
                                     else if (state.equals(STATE.NORMAL)) checkPassword();
                                     enter_pressed = true;
@@ -347,5 +267,21 @@ public class InputController{
     public void startAuthorization() {
         gui.updateLCDDisplay("Enter Password",pane);
         listenKeyPress();
+    }
+
+    public void setKeyPressDisable(boolean value) {
+        this.keyPressDisable = value;
+    }
+
+    public STATE getState() {
+        return state;
+    }
+
+    public void clearInput() {
+        this.entered_key = "";
+        this.displayText = "";
+        if (this.state == STATE.SETUP) {
+            this.temp_setup_password = "";
+        }
     }
 }
