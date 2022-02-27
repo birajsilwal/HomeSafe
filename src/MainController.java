@@ -63,10 +63,7 @@ public class MainController extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        AuthenticationManager authenticationManager = new AuthenticationManager();
-        SecurityManager securityManager = new SecurityManager();
-        InputController inputController = new InputController(gui,pane, authenticationManager, securityManager);
-
+        InputController inputController = new InputController(gui,pane);
         inputController.startSetUp();
     }
 
