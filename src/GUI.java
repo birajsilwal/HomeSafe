@@ -192,11 +192,14 @@ public class GUI{
         //Create Text for Display
         Text display = new Text();
         Font font;
-        String displayText = "";
         if (input.length()<7) {
              font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 24);
+        }else if(input.length() > 20){
+            font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 12);
+            input = input.substring(0,20);
+        }else{
+            font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 12);
         }
-        else font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 12);
         display.setFont(font);
         display.setX(lcdScreenX + 30);
         display.setY(lcdScreenY + 0.15 * lcdScreenHeight);
@@ -217,6 +220,49 @@ public class GUI{
         pane.getChildren().addAll(backlight, display);
     }
 
+//    /**
+//     * Display input on LCD display
+//     * @param input input to display
+//     * @param pane user's interface pane
+//     */
+//    public void updateLCDDisplay(String input, Pane pane){
+//        //Create Display Backlight
+//        Rectangle backlight = new Rectangle(lcdScreenWidth - 20, 0.2*lcdScreenHeight);
+//        backlight.setX(lcdScreenX + 10);
+//        backlight.setY(lcdScreenY + 10);
+//
+//        //Create Text for Display
+//        Text display = new Text();
+//        Font font;
+//        String displayText = "";
+//        if (input.length()<7) {
+//            font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 24);
+//        }
+//        else font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 12);
+//        display.setFont(font);
+//        display.setX(lcdScreenX + 30);
+//        display.setY(lcdScreenY + 0.15 * lcdScreenHeight);
+//        display.setFill(Color.GHOSTWHITE);
+//
+//
+//        if(input.equals("off")){ // when display is off
+//            backlight.setFill(Color.BLACK);
+//            display.setText("");
+//        }else if (input.equals("nothing")){ // when safe is on but display shows nothing
+//            backlight.setFill(Color.BLUE);
+//            display.setText("");
+//        }else{
+//            backlight.setFill(Color.BLUE);
+//            display.setText(input);
+//        }
+//
+//        pane.getChildren().addAll(backlight, display);
+//    }
+
+    /**
+     * Display finger print animation.
+     * @param pane user's interface pane.
+     */
     public void animateFingerPrint(Pane pane){
         //Get gif of fingerprint scanner
         InputStream stream = null;
@@ -239,9 +285,45 @@ public class GUI{
     }
 
     /**
+     * Displays fingerprint buttons to select fingerprint to use in authorization.
+     * @param pane
+     */
+    public void displaySelectFingerPrintButtons(Pane pane){
+        InputStream stream = null;
+        Button fingerPrintButton[] = new Button[3];
+        ImageView fingerPrintButtonIV[] = new ImageView[3];
+        String imageName;
+        for(int i = 0; i < 3; i++){
+            //Get safe image
+            imageName = "Fingerprint" + (i+1) + ".png";
+            try {
+                stream = new FileInputStream(
+                        "Resources/Images/" + imageName);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            Image image = new Image(stream, 75, 100, false, false);
+            fingerPrintButtonIV[i] = new ImageView(image);
+
+            //Create button
+            fingerPrintButton[i] = new Button();
+            fingerPrintButton[i].setPrefSize(50,50);
+            fingerPrintButton[i].setLayoutX((i+1) * (width / 4));
+            fingerPrintButton[i].setLayoutY(50);
+            fingerPrintButton[i].setGraphic(fingerPrintButtonIV[i]);
+            fingerPrintButton[i].setViewOrder(-1);
+
+            //Add to Panel
+            pane.getChildren().add(fingerPrintButton[i]);
+        }
+
+    }
+
+    /**
      * @return all the buttons
      */
     public ArrayList<Button> getButtons(){
         return buttonArrayList;
     }
+
 }
