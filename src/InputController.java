@@ -1,10 +1,7 @@
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-
-import java.net.PasswordAuthentication;
 import java.util.Scanner;
 
 public class InputController{
@@ -18,13 +15,11 @@ public class InputController{
     GUI gui;
     Pane pane;
     STATE state = STATE.SETUP;
-    AuthenticationManager authenticationManager;
     SecurityManager  securityManager;
 
-    public InputController(GUI gui, Pane pane) {
+    public InputController(GUI gui, Pane pane, SecurityManager securityManager) {
         this.gui = gui;
         this.pane = pane;
-        this.authenticationManager = authenticationManager;
         this.securityManager = securityManager;
     }
 
@@ -242,7 +237,7 @@ public class InputController{
                     }
                     else{
                         start = now;
-                        gui.imgArray.get(0).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(0).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -278,7 +273,7 @@ public class InputController{
 //                                timer1.start();
 //                            }
 //                        });
-                        gui.imgArray.get(1).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(1).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -288,7 +283,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(2).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(2).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -298,7 +293,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(3).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(3).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -308,7 +303,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(4).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(4).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if (!keyPressDisable) {
@@ -318,7 +313,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(5).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(5).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -328,7 +323,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(6).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(6).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -338,7 +333,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(7).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(7).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -348,7 +343,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(8).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(8).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -358,7 +353,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(9).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(9).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -368,7 +363,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(10).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(10).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if (!keyPressDisable) {
@@ -378,7 +373,7 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.imgArray.get(11).setOnAction(new EventHandler<ActionEvent>() {
+                        gui.buttonArrayList.get(11).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
@@ -427,14 +422,5 @@ public class InputController{
             }
         };
         timer1.start();
-    }
-
-
-    /**
-     * Get password from user
-     */
-    public void startAuthorization() {
-        gui.updateLCDDisplay("Enter Password",pane);
-        listenKeyPress();
     }
 }

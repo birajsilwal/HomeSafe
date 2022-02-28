@@ -30,16 +30,11 @@ public class MainController extends Application {
 
         SoundSensor soundSensor = new SoundSensor();
         PowerSensor powerSensor = new PowerSensor();
+        SecurityManager securityManager = new SecurityManager();
+
         GUI gui = new GUI(soundSensor, powerSensor);
-        Pane pane = new Pane();
-
-
-        pane = gui.createSafeInterface();
-        /*
-         * Set the scene
-         */
+        Pane pane = gui.createSafeInterface();
         gui.updateLCDDisplay("test", pane );
-
 
         /*
          * Example of SoundSensor for testing. Uncomment to use.
@@ -57,15 +52,10 @@ public class MainController extends Application {
 
 
         Scene scene = new Scene(pane, width, height);
-
-
-
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        SecurityManager securityManager = new SecurityManager();
-        InputController inputController = new InputController(gui,pane);
-
+        InputController inputController = new InputController(gui, pane, securityManager);
         inputController.startSetUp();
     }
 
