@@ -220,44 +220,6 @@ public class GUI{
         pane.getChildren().addAll(backlight, display);
     }
 
-//    /**
-//     * Display input on LCD display
-//     * @param input input to display
-//     * @param pane user's interface pane
-//     */
-//    public void updateLCDDisplay(String input, Pane pane){
-//        //Create Display Backlight
-//        Rectangle backlight = new Rectangle(lcdScreenWidth - 20, 0.2*lcdScreenHeight);
-//        backlight.setX(lcdScreenX + 10);
-//        backlight.setY(lcdScreenY + 10);
-//
-//        //Create Text for Display
-//        Text display = new Text();
-//        Font font;
-//        String displayText = "";
-//        if (input.length()<7) {
-//            font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 24);
-//        }
-//        else font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 12);
-//        display.setFont(font);
-//        display.setX(lcdScreenX + 30);
-//        display.setY(lcdScreenY + 0.15 * lcdScreenHeight);
-//        display.setFill(Color.GHOSTWHITE);
-//
-//
-//        if(input.equals("off")){ // when display is off
-//            backlight.setFill(Color.BLACK);
-//            display.setText("");
-//        }else if (input.equals("nothing")){ // when safe is on but display shows nothing
-//            backlight.setFill(Color.BLUE);
-//            display.setText("");
-//        }else{
-//            backlight.setFill(Color.BLUE);
-//            display.setText(input);
-//        }
-//
-//        pane.getChildren().addAll(backlight, display);
-//    }
 
     /**
      * Display finger print animation.
