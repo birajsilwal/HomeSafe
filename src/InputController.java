@@ -2,6 +2,7 @@ import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.Pane;
+import java.util.Scanner;
 
 public class InputController{
     String entered_key = "";
@@ -14,12 +15,12 @@ public class InputController{
     GUI gui;
     Pane pane;
     STATE state = STATE.SETUP;
-    AuthenticationManager authenticationManager;
     SecurityManager  securityManager;
 
-    public InputController(GUI gui, Pane pane) {
+    public InputController(GUI gui, Pane pane, SecurityManager securityManager) {
         this.gui = gui;
         this.pane = pane;
+        this.securityManager = securityManager;
     }
 
     /**
@@ -38,14 +39,14 @@ public class InputController{
      * (NOT for INITIAL SET-UP)
      */
     public void checkPassword() {
-//        boolean isCorrect = authenticationManager.verifyPassword(entered_key);
-//        if (isCorrect){
-        if (true){
+        boolean isCorrect = authenticationManager.verifyPassword(entered_key);
+        if (isCorrect){
             displayForTwoSeconds("Authorized",pane);
             // Let know Security Manager that the system is authorized
             keyPressDisable = true;
         }
         else{
+            entered_key = "";
             displayForTwoSeconds("Incorrect Password, Re-enter",pane);
             count_login--;
             AnimationTimer timer = new AnimationTimer() {
@@ -64,10 +65,34 @@ public class InputController{
             timer.start();
         }
     }
-
-
-    public boolean checkResetPin(){
-        return false;
+    public void checkResetPin(){
+        boolean isPWCorrect = authenticationManager.verifyPassword(entered_key);
+        boolean isResetCorrect = authenticationManager.verifyResetPin(entered_key);
+        entered_key = "";
+        gui.updateLCDDisplay("",pane);
+        if (isPWCorrect || isResetCorrect){
+            if (isResetCorrect){
+                System.out.println("1 reset is lost");
+            }
+            state = STATE.SETUP_IN_RESET;
+            setUpPassword();
+        }else{
+            displayForTwoSeconds("Incorrect pw or reset pin",pane);
+            AnimationTimer timer = new AnimationTimer() {
+                private long start;
+                @Override
+                public void handle(long l) {
+                    if(start==0L) start = l;
+                    else{
+                        if(l-start>1_500_000_000L){
+                            startResetPassword();
+                            this.stop();
+                        }
+                    }
+                }
+            };
+            timer.start();
+        }
     }
 
     /**
@@ -82,7 +107,12 @@ public class InputController{
                 listenKeyPress();
             }else{
                 displayForTwoSeconds("Enter 6-digit password",pane);
-                startSetUp();
+                if (state.equals(STATE.SETUP))
+                    startSetUp();
+                else {
+                    state = STATE.RESET;
+                    startResetPassword();
+                }
             }
         }
         else if(temp_setup_password.equals(password)){
@@ -90,13 +120,14 @@ public class InputController{
             System.out.println("Saved password is: "+password);
             displayForTwoSeconds("Saved Password",pane);
             state = STATE.NORMAL;
+            temp_setup_password = "";
             AnimationTimer timer = new AnimationTimer() {
                 private long start;
                 @Override
                 public void handle(long l) {
                     if(start==0L) start = l;
                     else{
-                        if(l-start>2_000_000_000L){
+                        if(l-start>1_500_000_000L){
                             startAuthorization();
                             this.stop();
                         }
@@ -114,8 +145,12 @@ public class InputController{
                 public void handle(long l) {
                     if(start==0L) start = l;
                     else{
-                        if(l-start>2_000_000_000L){
-                            startSetUp();
+                        if(l-start>1_500_000_000L){
+                            if (state.equals(STATE.SETUP)) startSetUp();
+                            else {
+                                state = STATE.RESET;
+                                startResetPassword();
+                            }
                             this.stop();
                         }
                     }
@@ -124,13 +159,42 @@ public class InputController{
             timer.start();
         }
     }
+    public void setUpPassword() {
+        gui.updateLCDDisplay("Enter New Password",pane);
+        listenKeyPress();
+    }
 
 
     /**
      * Ask user for set-up password
      */
     public void startSetUp() {
-        gui.updateLCDDisplay("Enter Set up Password",pane);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Setup fingerprint: Any number for simulation");
+        authenticationManager.setFingerPrint(scanner.next());
+        setUpPassword();
+    }
+
+
+    public void startAuthorization() {
+        temp_setup_password = "";
+        System.out.println("Verify Finger Print");
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            String fingerPrint = scanner.next();
+            if (authenticationManager.verifyFingerPrint(fingerPrint)) {
+                gui.updateLCDDisplay("Enter Password", pane);
+                listenKeyPress();
+                return;
+            } else {
+                System.out.println("Please re-enter finger print.");
+            }
+        }
+    }
+
+    private void startResetPassword() {
+        temp_setup_password = "";
+        gui.updateLCDDisplay("Enter password or reset pin",pane);
         listenKeyPress();
     }
 
@@ -177,20 +241,44 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    displayText += "0";
                                     readKey("0");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
                         });
+//                        gui.imgArray.get(0).addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+//                            @Override
+//                            public void handle(MouseEvent event) {
+//                                AnimationTimer timer1 = new AnimationTimer() {
+//
+//                                    long startTime;
+//                                    boolean isFirst = true;
+//
+//                                    @Override
+//                                    public void handle(long l) {
+//                                        if (event.getEventType().equals(MouseEvent.MOUSE_PRESSED)) {
+//                                            if(isFirst) {
+//                                                startTime=l;
+//                                                isFirst = false;
+//                                            }
+//                                        } else if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
+//                                            if (l-startTime > 3_000_000_000L){
+//                                                System.out.println("Here checks");
+//                                            }
+//                                            this.stop();
+//                                        }
+//                                    }
+//                                };
+//                                timer1.start();
+//                            }
+//                        });
                         gui.buttonArrayList.get(1).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    displayText += "1";
                                     readKey("1");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -199,9 +287,8 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    displayText += "2";
                                     readKey("2");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -210,9 +297,8 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    displayText += "3";
                                     readKey("3");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -221,9 +307,8 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if (!keyPressDisable) {
-                                    displayText += "4";
                                     readKey("4");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -232,9 +317,8 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    displayText += "5";
                                     readKey("5");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -243,9 +327,8 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    displayText += "6";
                                     readKey("6");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -254,9 +337,8 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    displayText += "7";
                                     readKey("7");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -265,9 +347,8 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    displayText += "8";
                                     readKey("8");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -276,9 +357,8 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    displayText += "9";
                                     readKey("9");
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -287,9 +367,8 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if (!keyPressDisable) {
-                                    displayText = displayText.substring(0, displayText.length() - 1);
                                     entered_key = entered_key.substring(0, entered_key.length() - 1);
-                                    gui.updateLCDDisplay(displayText, pane);
+                                    gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
                             }
@@ -298,8 +377,14 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
-                                    if (state.equals(STATE.SETUP)) checkSetUpPassword(entered_key);
+                                    if (entered_key.equals("000")) {
+                                        temp_setup_password = "";
+                                        startResetPassword();
+                                        state = STATE.RESET;
+                                    }
+                                    else if (state.equals(STATE.SETUP) || state.equals(STATE.SETUP_IN_RESET)) checkSetUpPassword(entered_key);
                                     else if (state.equals(STATE.NORMAL)) checkPassword();
+                                    else if (state.equals(STATE.RESET)) checkResetPin();
                                     enter_pressed = true;
                                 }
                             }
@@ -312,6 +397,7 @@ public class InputController{
     }
 
 
+
     /**
      * Display text on LCD screen for 2 seconds
      * @param message message to display
@@ -319,8 +405,7 @@ public class InputController{
      */
     private void displayForTwoSeconds(String message, Pane pane) {
         keyPressDisable = true;
-        displayText = message;
-        gui.updateLCDDisplay(displayText,pane);
+        gui.updateLCDDisplay(message,pane);
         entered_key = "";
         AnimationTimer timer1 = new AnimationTimer() {
             private long start1;
@@ -329,8 +414,7 @@ public class InputController{
                 if (start1==0L) start1 = l;
                 else{
                     if (l-start1>1_500_000_000){
-                        displayText = "";
-                        gui.updateLCDDisplay(displayText,pane);
+                        gui.updateLCDDisplay("",pane);
                         keyPressDisable = false;
                         this.stop();
                     }
@@ -338,14 +422,5 @@ public class InputController{
             }
         };
         timer1.start();
-    }
-
-
-    /**
-     * Get password from user
-     */
-    public void startAuthorization() {
-        gui.updateLCDDisplay("Enter Password",pane);
-        listenKeyPress();
     }
 }

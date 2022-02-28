@@ -5,8 +5,15 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import Sensors.SoundSensor.Sound;
 import Sensors.SoundSensor.SoundSensor;
+import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+import java.util.Scanner;
 
 
 public class MainController extends Application {
@@ -17,22 +24,17 @@ public class MainController extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws Exception {
         double width  = 1000;
         double height = 680;
 
         SoundSensor soundSensor = new SoundSensor();
         PowerSensor powerSensor = new PowerSensor();
+        SecurityManager securityManager = new SecurityManager();
+
         GUI gui = new GUI(soundSensor, powerSensor);
-        Pane pane = new Pane();
-
-
-        pane = gui.createSafeInterface();
-        /*
-         * Set the scene
-         */
+        Pane pane = gui.createSafeInterface();
         gui.updateLCDDisplay("test", pane );
-
 
         /*
          * Example of SoundSensor for testing. Uncomment to use.
@@ -50,15 +52,10 @@ public class MainController extends Application {
 
 
         Scene scene = new Scene(pane, width, height);
-
-
-
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        SecurityManager securityManager = new SecurityManager();
-        InputController inputController = new InputController(gui,pane);
-
+        InputController inputController = new InputController(gui, pane, securityManager);
         inputController.startSetUp();
     }
 
