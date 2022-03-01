@@ -1,3 +1,5 @@
+import Sensors.SoundSensor.Sound;
+import Sensors.SoundSensor.SoundSensor;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -5,6 +7,7 @@ import javafx.scene.layout.Pane;
 import java.util.Scanner;
 
 public class InputController{
+    private final SoundSensor soundSensor;
     String entered_key = "";
     String finger_print = "";
     Boolean keyPressDisable = false;
@@ -17,10 +20,11 @@ public class InputController{
     STATE state = STATE.SETUP;
     SecurityManager  securityManager;
 
-    public InputController(GUI gui, Pane pane, SecurityManager securityManager) {
+    public InputController(GUI gui, Pane pane, SecurityManager securityManager, SoundSensor soundSensor) {
         this.gui = gui;
         this.pane = pane;
         this.securityManager = securityManager;
+        this.soundSensor = soundSensor;
     }
 
     /**
@@ -39,10 +43,12 @@ public class InputController{
      * (NOT for INITIAL SET-UP)
      */
     public void checkPassword() {
-        boolean isCorrect = authenticationManager.verifyPassword(entered_key);
+//        boolean isCorrect = authenticationManager.verifyPassword(entered_key);
+        boolean isCorrect = true;
         if (isCorrect){
             displayForTwoSeconds("Authorized",pane);
             // Let know Security Manager that the system is authorized
+            gui.openSafe();
             keyPressDisable = true;
         }
         else{
@@ -66,9 +72,11 @@ public class InputController{
         }
     }
     public void checkResetPin(){
-        boolean isPWCorrect = authenticationManager.verifyPassword(entered_key);
-        boolean isResetCorrect = authenticationManager.verifyResetPin(entered_key);
-        entered_key = "";
+//        boolean isPWCorrect = authenticationManager.verifyPassword(entered_key);
+//        boolean isResetCorrect = authenticationManager.verifyResetPin(entered_key);
+        boolean isPWCorrect = true;
+        boolean isResetCorrect = true;
+                entered_key = "";
         gui.updateLCDDisplay("",pane);
         if (isPWCorrect || isResetCorrect){
             if (isResetCorrect){
@@ -171,7 +179,7 @@ public class InputController{
     public void startSetUp() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Setup fingerprint: Any number for simulation");
-        authenticationManager.setFingerPrint(scanner.next());
+//        authenticationManager.setFingerPrint(scanner.next());
         setUpPassword();
     }
 
@@ -182,13 +190,13 @@ public class InputController{
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String fingerPrint = scanner.next();
-            if (authenticationManager.verifyFingerPrint(fingerPrint)) {
-                gui.updateLCDDisplay("Enter Password", pane);
-                listenKeyPress();
-                return;
-            } else {
-                System.out.println("Please re-enter finger print.");
-            }
+//            if (authenticationManager.verifyFingerPrint(fingerPrint)) {
+//                gui.updateLCDDisplay("Enter Password", pane);
+//                listenKeyPress();
+//                return;
+//            } else {
+//                System.out.println("Please re-enter finger print.");
+//            }
         }
     }
 
@@ -242,6 +250,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
                                     readKey("0");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -278,6 +291,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
                                     readKey("1");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -288,6 +306,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
                                     readKey("2");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -298,6 +321,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
                                     readKey("3");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -308,6 +336,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if (!keyPressDisable) {
                                     readKey("4");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -318,6 +351,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
                                     readKey("5");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -328,6 +366,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
                                     readKey("6");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -338,6 +381,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
                                     readKey("7");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -348,6 +396,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
                                     readKey("8");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -358,6 +411,11 @@ public class InputController{
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
                                     readKey("9");
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -367,6 +425,11 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if (!keyPressDisable) {
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     entered_key = entered_key.substring(0, entered_key.length() - 1);
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
@@ -377,6 +440,11 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     if (entered_key.equals("000")) {
                                         temp_setup_password = "";
                                         startResetPassword();
@@ -422,5 +490,21 @@ public class InputController{
             }
         };
         timer1.start();
+    }
+
+    public void setKeyPressDisable(boolean value) {
+        this.keyPressDisable = value;
+    }
+
+    public STATE getState() {
+        return state;
+    }
+
+    public void clearInput() {
+        this.entered_key = "";
+        this.displayText = "";
+        if (this.state == STATE.SETUP) {
+            this.temp_setup_password = "";
+        }
     }
 }

@@ -34,29 +34,45 @@ public class MainController extends Application {
 
         GUI gui = new GUI(soundSensor, powerSensor);
         Pane pane = gui.createSafeInterface();
-        gui.updateLCDDisplay("test", pane );
+//        gui.updateLCDDisplay("test", pane );
+//        gui.displaySelectFingerPrintButtons(pane);
 
         /*
          * Example of SoundSensor for testing. Uncomment to use.
          */
-        this.soundSensor = new SoundSensor();
-        VBox box = new VBox();
-        // Create buttons to play sounds
-        Button on = this.SoundButtonExample(Sound.On, "On");
-        Button off = this.SoundButtonExample(Sound.Off, "Off");
-        Button beep = this.SoundButtonExample(Sound.Beep, "Beep");
-        // To show icon all you have to do is get the view from the soundSensor object.
-        // The icon will change automatically
-        box.getChildren().addAll(on, off, beep, this.soundSensor.getView());
-        pane.getChildren().add(box);
+//        this.soundSensor = new SoundSensor();
+//        VBox box = new VBox();
+//        // Create buttons to play sounds
+//        Button on = this.SoundButtonExample(Sound.On, "On");
+//        Button off = this.SoundButtonExample(Sound.Off, "Off");
+//        Button beep = this.SoundButtonExample(Sound.Beep, "Beep");
+//        // To show icon all you have to do is get the view from the soundSensor object.
+//        // The icon will change automatically
+//        box.getChildren().addAll(on, off, beep, this.soundSensor.getView());
+//        pane.getChildren().add(box);
 
 
         Scene scene = new Scene(pane, width, height);
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        InputController inputController = new InputController(gui, pane, securityManager);
+        InputController inputController = new InputController(gui, pane, securityManager,soundSensor);
+
+        powerSensor.setOnAction(value -> {
+            inputController.setKeyPressDisable(!value);
+            if (value) {
+                if (inputController.getState() == STATE.SETUP) {
+                    inputController.startSetUp();
+                } else {
+                    inputController.startAuthorization();
+                }
+            } else {
+                gui.updateLCDDisplay("off", pane);
+                inputController.clearInput();
+            }
+        });
         inputController.startSetUp();
+        inputController.setKeyPressDisable(!powerSensor.hasPower());
     }
 
 

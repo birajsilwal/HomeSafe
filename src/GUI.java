@@ -33,6 +33,14 @@ public class GUI{
     private final SoundSensor soundSensor;
     private final PowerSensor powerSensor;
 
+    int lcdDisplayHeight = 100;
+    Rectangle background = new Rectangle(width, height + lcdDisplayHeight, Color.LIGHTGREY);
+    Rectangle grayBackground = new Rectangle(235, 281 + lcdDisplayHeight, Color.GREY);
+    Rectangle blackBackground = new Rectangle(215, 260 + lcdDisplayHeight, Color.BLACK);
+    Rectangle onOffBtn = new Rectangle(50,50);
+
+    Pane pane = new Pane();
+
     public GUI(SoundSensor soundSensor, PowerSensor powerSensor){
         this.soundSensor = soundSensor;
         this.powerSensor = powerSensor;
@@ -47,8 +55,6 @@ public class GUI{
      * @return pane
      */
     public Pane createSafeInterface() {
-        Pane pane = new Pane();
-
         //get button images
         int imgSize = 55;
         InputStream stream = null;
@@ -98,6 +104,7 @@ public class GUI{
         scannerButton.setStyle("-fx-background-color: #555659");
 
 
+
         //Get safe image
         try {
             stream = new FileInputStream(
@@ -122,16 +129,14 @@ public class GUI{
         vbox.getChildren().addAll(hbox1, hbox2, hbox3, hbox4);
         vbox.setPrefSize(215, 290);
 
-        int lcdDisplayHeight = 100;
-        Rectangle background = new Rectangle(width, height + lcdDisplayHeight, Color.LIGHTGREY);
-        Rectangle grayBackground = new Rectangle(235, 281 + lcdDisplayHeight, Color.GREY);
-        Rectangle blackBackground = new Rectangle(215, 260 + lcdDisplayHeight, Color.BLACK);
-        grayBackground.setX(grayBackground.getX()+360);
-        grayBackground.setY(grayBackground.getY()+207);
+        grayBackground.setX(360);
+        grayBackground.setY(207);
         blackBackground.setX(grayBackground.getX()+10);
         blackBackground.setY(grayBackground.getY()+10);
+
         vbox.setTranslateX(blackBackground.getX());
         vbox.setTranslateY(blackBackground.getY() + lcdDisplayHeight);
+        System.out.println(grayBackground.getX());
 
         lcdScreenX = blackBackground.getX();
         lcdScreenY = blackBackground.getY();
@@ -146,7 +151,11 @@ public class GUI{
         BorderPane keypadPane = new BorderPane(text);
         keypadPane.getChildren().addAll(grayBackground, blackBackground,vbox);
 
-        Rectangle onOffBtn = new Rectangle(50,50);
+
+        /*
+           On/Off button
+         */
+//        Rectangle onOffBtn = new Rectangle(50,50);
         onOffBtn.setTranslateX(620);
         onOffBtn.setTranslateY(510);
         onOffBtn.setFill(Color.TRANSPARENT);
@@ -171,11 +180,43 @@ public class GUI{
 
         ImageView soundDisplay = soundSensor.getView();
         soundDisplay.setTranslateX(0);
-        soundDisplay.setTranslateY(0);
+        soundDisplay.setTranslateY(50);
+
         pane.getChildren().addAll(background, safeCloseView, keypadPane, powerDisplay, onOffBtn, soundDisplay);
+        updateLCDDisplay("test", pane );
+        displaySelectFingerPrintButtons(pane);
         return pane;
     }
 
+
+    /**
+     * Display the unlocked/opened safe
+     * Close-safe button
+     */
+    public void openSafe(){
+        Button close = new Button("Wanna close your safe?");
+
+        close.setOnMouseClicked(event -> {
+            pane.getChildren().clear();
+            createSafeInterface();
+        });
+        pane.getChildren().clear();
+        InputStream stream = null;
+        //Get safe image
+        try {
+            stream = new FileInputStream(
+                    "Resources/Images/safeOpen.PNG");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Image safeOpenImg = new Image(stream, width, height, false, false);
+        ImageView safeOpenView = new ImageView(safeOpenImg);
+        Ellipse powerDisplay = this.powerSensor.getView();
+        powerDisplay.setFill(Color.RED);
+        powerDisplay.setTranslateX(720);
+        powerDisplay.setTranslateY(477);
+        pane.getChildren().addAll(background, safeOpenView, close, powerDisplay);
+    }
 
 
     /**
@@ -254,7 +295,11 @@ public class GUI{
         InputStream stream = null;
         Button fingerPrintButton[] = new Button[3];
         ImageView fingerPrintButtonIV[] = new ImageView[3];
+        String names[] = {"Biraj", "Benathy", "Ruby"};
         String imageName;
+        HBox box = new HBox();
+        int w = 30;
+        int h = 35;
         for(int i = 0; i < 3; i++){
             //Get safe image
             imageName = "Fingerprint" + (i+1) + ".png";
@@ -266,19 +311,20 @@ public class GUI{
             }
             Image image = new Image(stream, 75, 100, false, false);
             fingerPrintButtonIV[i] = new ImageView(image);
+            fingerPrintButtonIV[i].setFitHeight(h);
+            fingerPrintButtonIV[i].setFitWidth(w);
 
             //Create button
-            fingerPrintButton[i] = new Button();
-            fingerPrintButton[i].setPrefSize(50,50);
-            fingerPrintButton[i].setLayoutX((i+1) * (width / 4));
-            fingerPrintButton[i].setLayoutY(50);
+            fingerPrintButton[i] = new Button(names[i]);
+//            fingerPrintButton[i].setPrefSize(w,h);
             fingerPrintButton[i].setGraphic(fingerPrintButtonIV[i]);
             fingerPrintButton[i].setViewOrder(-1);
 
-            //Add to Panel
-            pane.getChildren().add(fingerPrintButton[i]);
+            box.getChildren().add(fingerPrintButton[i]);
         }
 
+        //Add to Panel
+        pane.getChildren().add(box);
     }
 
     /**
