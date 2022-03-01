@@ -58,7 +58,6 @@ public class MainController extends Application {
         primaryStage.show();
 
         InputController inputController = new InputController(gui, pane, securityManager,soundSensor);
-
         powerSensor.setOnAction(value -> {
             inputController.setKeyPressDisable(!value);
             inputController.clearInput();
