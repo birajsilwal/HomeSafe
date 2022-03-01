@@ -1,6 +1,9 @@
 import Sensors.PowerSensor.PowerSensor;
 import Sensors.SoundSensor.Sound;
 import Sensors.SoundSensor.SoundSensor;
+import javafx.animation.AnimationTimer;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -133,12 +136,11 @@ public class GUI{
 
         grayBackground.setX(360);
         grayBackground.setY(207);
-        blackBackground.setX(grayBackground.getX()+10);
-        blackBackground.setY(grayBackground.getY()+10);
+        blackBackground.setX(370);
+        blackBackground.setY(217);
 
         vbox.setTranslateX(blackBackground.getX());
         vbox.setTranslateY(blackBackground.getY() + lcdDisplayHeight);
-        System.out.println(grayBackground.getX());
 
         lcdScreenX = blackBackground.getX();
         lcdScreenY = blackBackground.getY();
@@ -213,6 +215,7 @@ public class GUI{
         powerDisplay.setTranslateX(720);
         powerDisplay.setTranslateY(477);
         pane.getChildren().addAll(background, safeOpenView, close, powerDisplay);
+        System.out.println("end of opensafe()");
     }
 
 
@@ -280,8 +283,21 @@ public class GUI{
         scannerAnimationView.setY(100);
         scannerAnimationView.setViewOrder(-1);
 
-        //Add to Panel
         pane.getChildren().add(scannerAnimationView);
+        AnimationTimer timer1 = new AnimationTimer() {
+            private long start1;
+            @Override
+            public void handle(long l) {
+                if (start1==0L) start1 = l;
+                else{
+                    if (l-start1>1_500_000_000){
+                        pane.getChildren().remove(scannerAnimationView);
+                        this.stop();
+                    }
+                }
+            }
+        };
+        timer1.start();
     }
 
     /**

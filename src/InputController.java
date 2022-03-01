@@ -1,8 +1,10 @@
+import Sensors.SoundSensor.Sound;
 import Sensors.SoundSensor.SoundSensor;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.Pane;
+import java.util.Scanner;
 
 /**
  * Controls the input from the user and perform required functionality
@@ -20,10 +22,13 @@ public class InputController{
     private final AuthenticationManager fingerPrintManager = new FingerprintKey();
     private final AuthenticationManager passwordManager = new PasswordKey();
     private boolean keyPressDisable = true;
+    SoundSensor soundSensor;
+
 
     public InputController(GUI gui, Pane pane, SecurityManager securityManager, SoundSensor soundSensor) {
         this.gui = gui;
         this.pane = pane;
+        this.soundSensor = soundSensor;
     }
 
     /**
@@ -41,16 +46,17 @@ public class InputController{
     public void checkPassword(String entered_key) {
         boolean isCorrect = passwordManager.isValidKey(entered_key);
         if (isCorrect){
-            displayForTwoSeconds("Authorized",pane);
-            gui.openSafe();
-            gui.close.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    gui.pane.getChildren().clear();
-                    gui.createSafeInterface();
-                    startAuthorization();
-                }
-            });
+//            displayForTwoSeconds("Authorized",pane);
+            displayThenOpen("Authorized",pane);
+//            gui.openSafe();
+//            gui.close.setOnAction(new EventHandler<ActionEvent>() {
+//                @Override
+//                public void handle(ActionEvent actionEvent) {
+//                    gui.pane.getChildren().clear();
+//                    gui.createSafeInterface();
+//                    startAuthorization();
+//                }
+//            });
         }
         else if (count_login==0){
             displayForTwoSeconds("Max attempt reached",pane);
@@ -204,13 +210,13 @@ public class InputController{
 
     public void listenFingerPress(){
         gui.updateLCDDisplay("Enter Fingerprint",pane);
-        keyPressDisable = true;
         for (int i = 0; i < gui.fingerPrintButton.length; i++) {
             int finalI = i;
             gui.fingerPrintButton[i].setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     keyPressDisable =  false;
+                    gui.animateFingerPrint(pane);
                     if (state.equals(STATE.SETUP)) {
                         temp_fingerPrint = gui.fingerPrintButton[finalI].getText();
                         System.out.println(temp_fingerPrint);
@@ -244,10 +250,7 @@ public class InputController{
             @Override
             public void handle(long now) {
                 if (start==0L) start = now;
-                else if(shouldStop) {
-                    this.stop();
-                    System.out.println("Animation Timer was stopped");
-                }
+                else if(shouldStop) this.stop();
                 else{
                     if (now-start>=10_000_000_000L){
                         if (isTimeOutActive) {
@@ -272,7 +275,6 @@ public class InputController{
                             timer1.start();
                             isTimeOutActive = false;
                         }
-                        shouldStop = true;
                     }
                     else{
                         for (int i=0; i<=9; i++){
@@ -284,6 +286,11 @@ public class InputController{
                                         System.out.println("Clicked");
                                         readKey(finalI);
                                         gui.updateLCDDisplay(entered_key, pane);
+                                        try {
+                                            soundSensor.playSound(Sound.Beep);
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
                                         start = now;
                                         isTimeOutActive = true;
                                     }
@@ -321,8 +328,13 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if (!keyPressDisable) {
-                                    if (entered_key.length()>1)
+                                    if (entered_key.length()>0)
                                         entered_key = entered_key.substring(0, entered_key.length() - 1);
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     gui.updateLCDDisplay(entered_key, pane);
                                     start = now;
                                 }
@@ -347,7 +359,11 @@ public class InputController{
                                     else if (state.equals(STATE.NORMAL)) checkPassword(entered_key);
                                     else if (state.equals(STATE.RESET)) checkResetPin(entered_key);
                                     entered_key = "";
-
+                                    try {
+                                        soundSensor.playSound(Sound.Beep);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                     isTimeOutActive = false;
                                     shouldStop = true;
                                     start = now;
@@ -388,6 +404,44 @@ public class InputController{
         };
         timer1.start();
     }
+
+
+    /**
+     * Display text on LCD screen for 2 seconds then open safe
+     * @param message message to display
+     * @param pane pane
+     */
+    private void displayThenOpen(String message, Pane pane) {
+        keyPressDisable = true;
+        gui.updateLCDDisplay(message,pane);
+        entered_key = "";
+        AnimationTimer timer1 = new AnimationTimer() {
+            private long start1;
+            @Override
+            public void handle(long l) {
+                if (start1==0L) start1 = l;
+                else{
+                    if (l-start1>1_500_000_000){
+                        gui.updateLCDDisplay("",pane);
+                        keyPressDisable = false;
+                        this.stop();
+                        gui.openSafe();
+                        gui.close.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                gui.pane.getChildren().clear();
+                                gui.createSafeInterface();
+                                startAuthorization();
+                            }
+                        });
+                    }
+                }
+            }
+        };
+        timer1.start();
+
+    }
+
 
     public void setKeyPressDisable(boolean value) {
         this.keyPressDisable = value;
