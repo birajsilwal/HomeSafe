@@ -58,7 +58,6 @@ public class MainController extends Application {
         primaryStage.show();
 
         InputController inputController = new InputController(gui, pane, securityManager,soundSensor);
-
         powerSensor.setOnAction(value -> {
             inputController.setKeyPressDisable(!value);
             inputController.clearInput();
@@ -72,8 +71,10 @@ public class MainController extends Application {
                         if (l-start>1_000_000_000) {
                             if (inputController.getState() == STATE.FIRST_ACCESS ||
                                     inputController.getState() == STATE.SETUP) {
+                                inputController.setState(STATE.FIRST_ACCESS);
                                 inputController.startSetUp();
                             } else {
+                                inputController.setState(STATE.NORMAL);
                                 inputController.startAuthorization();
                             }
                             this.stop();
@@ -83,6 +84,7 @@ public class MainController extends Application {
                 timer.start();
             } else {
                 gui.updateLCDDisplay("Locked",pane);
+                inputController.shouldStop = true;
                 AnimationTimer timer = new AnimationTimer() {
                     private long start;
                     @Override
