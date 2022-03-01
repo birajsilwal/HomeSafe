@@ -5,14 +5,16 @@
  * @author Nehemiah Cionelo
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 
 abstract class AuthenticationManager {
-    private final LinkedList<Object> resetPINs;
-    private Object currentKey;
+    private ArrayList<String> resetPINs;
+    private String currentKey;
     public AuthenticationManager(){
-        resetPINs = new LinkedList<>();
+        resetPINs = new ArrayList<>();
     }
     /**
      * Method for when user wants to set a new key.
@@ -21,16 +23,16 @@ abstract class AuthenticationManager {
      * @return true if input is valid passcode and
      * current key is changed to new key, else false
      */
-    public boolean setNewKey(Object input, Object newKey) {
+    public boolean setNewKey(String input, String newKey) {
         //CHK NEW KEY CORRECT TYPE
-        if(newKey.getClass().equals(currentKey)) {
+        if(newKey.equals(currentKey)) {
             System.out.println("New key ["+ newKey + "] invalid type." +
                     "\nNew key not set.");
             return false;
         }
         //RESET PIN CASE
         else if (!resetPINs.isEmpty() &&
-                resetPINs.getFirst().getClass().equals(input.getClass())
+                resetPINs.get(0).equals(input)
                 && containsResetPIN(input)) {
             //destroy that reset PIN
             resetPINs.remove(input);
@@ -40,7 +42,7 @@ abstract class AuthenticationManager {
             return true;
         }
         //6-DIGIT PIN OR KNOWN FINGERPRINT CASE
-        else if (currentKey.getClass().equals(input.getClass())
+        else if (currentKey.equals(input)
                 && isValidKey(input)) {
             this.currentKey = newKey;
             System.out.println("New key [" + newKey + "] set.");
@@ -50,6 +52,9 @@ abstract class AuthenticationManager {
                 "\nNew key not set.");
         return false;
     }
+    public void setKey(String key) {
+        this.currentKey = key;
+    }
 
     /**
      * @param PINs
@@ -58,6 +63,10 @@ abstract class AuthenticationManager {
     public boolean setResetPINs(LinkedList<String> PINs){
         resetPINs.addAll(PINs);
         return !resetPINs.isEmpty();
+    }
+    public void removeResetPIN(String entered_key){
+        resetPINs.removeIf(entered_key::equals);
+        System.out.println(Arrays.toString(resetPINs.toArray()));
     }
     /**
      * @return current key
@@ -72,7 +81,7 @@ abstract class AuthenticationManager {
     /**
      * @return reset pins
      */
-    public LinkedList<Object> getResetPINs() {
+    public ArrayList<String> getResetPINs() {
         if (resetPINs.isEmpty()) System.out.println("Reset PINs empty.");
         return resetPINs;
     }
@@ -80,15 +89,15 @@ abstract class AuthenticationManager {
      * @param PIN inputted reset pin from user
      * @return true if given pin is one of the safe's unique reset PINs
      */
-    public boolean containsResetPIN(Object PIN) { //compareResetPin()
+    public boolean containsResetPIN(String PIN) { //compareResetPin()
         return resetPINs.contains(PIN);
     }
     /**
      * @param inputKey
      * @return true if inputKey is the current key, else false
      */
-    public boolean isValidKey(Object inputKey) {
-    return currentKey.equals(inputKey); //may need to override .equals() especially for Fingerprint?
+    public boolean isValidKey(String inputKey) {
+        return currentKey != null && currentKey.equals(inputKey); //may need to override .equals() especially for Fingerprint?
     }
 }
 /**
@@ -109,13 +118,14 @@ class FingerprintKey extends AuthenticationManager {
 
 class PasswordKey extends AuthenticationManager {
     private static final int NUM_RESET_PINS = 15;
-    private static final int RESET_PIN_LENGTH = 20;
+    private static final int RESET_PIN_LENGTH = 5;
     private LinkedList<String> resetPINs;
     public PasswordKey () {
         resetPINs = new LinkedList<>();
         generateResetPINs();
         super.setResetPINs(resetPINs);
     }
+
     //Method to generate the unique 15 unique reset pins
     private void generateResetPINs() {
         for(int i = 0; i < NUM_RESET_PINS; i++) {
@@ -129,6 +139,7 @@ class PasswordKey extends AuthenticationManager {
         for(int i = 0; i < RESET_PIN_LENGTH; i++) {
             str.append(rand.nextInt(10));
         }
+        System.out.println(str);
         return str.toString();
     }
 

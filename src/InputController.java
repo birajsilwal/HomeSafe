@@ -7,15 +7,17 @@ import java.util.Scanner;
 public class InputController{
     String entered_key = "";
     String finger_print = "";
-    Boolean keyPressDisable = false;
-    String displayText = "";
+    boolean keyPressDisable = false;
+    boolean isTimeOutActive = false;
     String temp_setup_password = "";
-    boolean enter_pressed = false;
     int count_login = 5;
+    String setUpPin =  "12345";
     GUI gui;
     Pane pane;
     STATE state = STATE.SETUP;
     SecurityManager  securityManager;
+    AuthenticationManager fingerPrintManager = new FingerprintKey();
+    AuthenticationManager passwordManager = new PasswordKey();
 
     public InputController(GUI gui, Pane pane, SecurityManager securityManager) {
         this.gui = gui;
@@ -39,7 +41,7 @@ public class InputController{
      * (NOT for INITIAL SET-UP)
      */
     public void checkPassword() {
-        boolean isCorrect = authenticationManager.verifyPassword(entered_key);
+        boolean isCorrect = passwordManager.isValidKey(entered_key);
         if (isCorrect){
             displayForTwoSeconds("Authorized",pane);
             // Let know Security Manager that the system is authorized
@@ -66,14 +68,12 @@ public class InputController{
         }
     }
     public void checkResetPin(){
-        boolean isPWCorrect = authenticationManager.verifyPassword(entered_key);
-        boolean isResetCorrect = authenticationManager.verifyResetPin(entered_key);
+        boolean isPWCorrect = passwordManager.isValidKey(entered_key);
+        boolean isResetCorrect = passwordManager.containsResetPIN(entered_key);
+        if (isResetCorrect) passwordManager.removeResetPIN(entered_key);
         entered_key = "";
         gui.updateLCDDisplay("",pane);
         if (isPWCorrect || isResetCorrect){
-            if (isResetCorrect){
-                System.out.println("1 reset is lost");
-            }
             state = STATE.SETUP_IN_RESET;
             setUpPassword();
         }else{
@@ -116,7 +116,8 @@ public class InputController{
             }
         }
         else if(temp_setup_password.equals(password)){
-//            authenticationManager.setSavedPassword(password);
+            //authenticationManager.setSavedPassword(password);
+            passwordManager.setKey(password);
             System.out.println("Saved password is: "+password);
             displayForTwoSeconds("Saved Password",pane);
             state = STATE.NORMAL;
@@ -171,7 +172,7 @@ public class InputController{
     public void startSetUp() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Setup fingerprint: Any number for simulation");
-        authenticationManager.setFingerPrint(scanner.next());
+        fingerPrintManager.setKey(scanner.next());
         setUpPassword();
     }
 
@@ -182,7 +183,7 @@ public class InputController{
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String fingerPrint = scanner.next();
-            if (authenticationManager.verifyFingerPrint(fingerPrint)) {
+            if (fingerPrintManager.isValidKey(fingerPrint)) {
                 gui.updateLCDDisplay("Enter Password", pane);
                 listenKeyPress();
                 return;
@@ -205,7 +206,6 @@ public class InputController{
      * Handle both initial set-up and normal authorization
      */
     public void listenKeyPress() {
-        enter_pressed = false;
         entered_key = "";
         AnimationTimer timer = new AnimationTimer() {
             private long start;
@@ -213,40 +213,42 @@ public class InputController{
             public void handle(long now) {
                 if (start==0L) start = now;
                 else{
-                    if ((now-start>=10_000_000_000L) && !entered_key.equals("")){
-                        System.out.println("Came here");
-                        if (!enter_pressed) {
-                            displayForTwoSeconds("TimeOut", pane);
-                            AnimationTimer timer = new AnimationTimer() {
-                                private long start;
-                                @Override
-                                public void handle(long l) {
-                                    if(start==0L) start = l;
-                                    else{
-                                        if(l-start>2_000_000_000L){
-                                            if (state.equals(STATE.SETUP)) startSetUp();
-                                            else startAuthorization();
-                                            this.stop();
-                                        }
+                    if (now-start>=10_000_000_000L && isTimeOutActive){
+                        displayForTwoSeconds("TimeOut", pane);
+                        AnimationTimer timer1 = new AnimationTimer() {
+                            private long startT;
+                            @Override
+                            public void handle(long l) {
+                                if(startT==0L) startT = l;
+                                else{
+                                    if(l-startT>2_000_000_000L){
+                                        if (state.equals(STATE.SETUP)) startSetUp();
+                                        else if (state.equals(STATE.NORMAL)) startAuthorization();
+                                        else startResetPassword();
+                                        this.stop();
                                     }
                                 }
-                            };
-                            timer.start();
-                        }
+                            }
+                        };
+                        timer1.start();
+                        isTimeOutActive = false;
                         this.stop();
                     }
                     else{
-                        start = now;
-                        gui.buttonArrayList.get(0).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    readKey("0");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
+                        for (int i=0; i<=9; i++){
+                            String finalI = String.valueOf(i);
+                            gui.buttonArrayList.get(i).setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    if(!keyPressDisable) {
+                                        isTimeOutActive = true;
+                                        readKey(finalI);
+                                        gui.updateLCDDisplay(entered_key, pane);
+                                        start = now;
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
 //                        gui.imgArray.get(0).addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
 //                            @Override
 //                            public void handle(MouseEvent event) {
@@ -273,96 +275,7 @@ public class InputController{
 //                                timer1.start();
 //                            }
 //                        });
-                        gui.buttonArrayList.get(1).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    readKey("1");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(2).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    readKey("2");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(3).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    readKey("3");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(4).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if (!keyPressDisable) {
-                                    readKey("4");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(5).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    readKey("5");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(6).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    readKey("6");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(7).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    readKey("7");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(8).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    readKey("8");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
-                                }
-                            }
-                        });
-                        gui.buttonArrayList.get(9).setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    readKey("9");
-                                    gui.updateLCDDisplay(entered_key, pane);
-                                    start = now;
-                                }
-                            }
-                        });
+
                         gui.buttonArrayList.get(10).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
@@ -377,15 +290,15 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if(!keyPressDisable) {
+                                    isTimeOutActive = false;
                                     if (entered_key.equals("000")) {
                                         temp_setup_password = "";
-                                        startResetPassword();
                                         state = STATE.RESET;
+                                        startResetPassword();
                                     }
                                     else if (state.equals(STATE.SETUP) || state.equals(STATE.SETUP_IN_RESET)) checkSetUpPassword(entered_key);
                                     else if (state.equals(STATE.NORMAL)) checkPassword();
                                     else if (state.equals(STATE.RESET)) checkResetPin();
-                                    enter_pressed = true;
                                 }
                             }
                         });
