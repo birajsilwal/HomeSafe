@@ -235,9 +235,9 @@ public class GUI{
         Font font;
         if (input.length()<7) {
              font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 24);
-        }else if(input.length() > 20){
+        }else if(input.length() > 21){
             font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 12);
-            input = input.substring(0,20);
+            input = input.substring(0,21);
         }else{
             font = Font.font("Comic Sans MS", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 12);
         }
@@ -307,7 +307,7 @@ public class GUI{
     public void displaySelectFingerPrintButtons(Pane pane){
         InputStream stream = null;
         ImageView fingerPrintButtonIV[] = new ImageView[3];
-        String names[] = {"Biraj", "Benathy", "Ruby"};
+        String names[] = {"Biraj", "Bethany", "Ruby"};
         String imageName;
         HBox box = new HBox();
         int w = 30;

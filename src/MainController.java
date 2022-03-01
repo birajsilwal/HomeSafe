@@ -35,7 +35,7 @@ public class MainController extends Application {
 
         GUI gui = new GUI(soundSensor, powerSensor);
         Pane pane = gui.createSafeInterface();
-//        gui.updateLCDDisplay("test", pane );
+        gui.updateLCDDisplay("off", pane );
 //        gui.displaySelectFingerPrintButtons(pane);
 
         /*
