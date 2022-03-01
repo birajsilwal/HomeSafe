@@ -74,6 +74,9 @@ public class InputController{
         entered_key = "";
         gui.updateLCDDisplay("",pane);
         if (isPWCorrect || isResetCorrect){
+            if (isResetCorrect){
+                System.out.println("1 reset is lost");
+            }
             state = STATE.SETUP_IN_RESET;
             setUpPassword();
         }else{
@@ -293,8 +296,8 @@ public class InputController{
                                     isTimeOutActive = false;
                                     if (entered_key.equals("000")) {
                                         temp_setup_password = "";
-                                        state = STATE.RESET;
                                         startResetPassword();
+                                        state = STATE.RESET;
                                     }
                                     else if (state.equals(STATE.SETUP) || state.equals(STATE.SETUP_IN_RESET)) checkSetUpPassword(entered_key);
                                     else if (state.equals(STATE.NORMAL)) checkPassword();
@@ -335,5 +338,20 @@ public class InputController{
             }
         };
         timer1.start();
+    }
+
+    public void setKeyPressDisable(boolean value) {
+        this.keyPressDisable = value;
+    }
+
+    public STATE getState() {
+        return state;
+    }
+
+    public void clearInput() {
+        this.entered_key = "";
+        if (this.state == STATE.SETUP) {
+            this.temp_setup_password = "";
+        }
     }
 }
