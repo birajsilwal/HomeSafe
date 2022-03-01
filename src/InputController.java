@@ -1,3 +1,4 @@
+import Sensors.SoundSensor.SoundSensor;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -18,11 +19,13 @@ public class InputController{
     SecurityManager  securityManager;
     AuthenticationManager fingerPrintManager = new FingerprintKey();
     AuthenticationManager passwordManager = new PasswordKey();
+    SoundSensor soundSensor;
 
-    public InputController(GUI gui, Pane pane, SecurityManager securityManager) {
+    public InputController(GUI gui, Pane pane, SecurityManager securityManager, SoundSensor soundSensor) {
         this.gui = gui;
         this.pane = pane;
         this.securityManager = securityManager;
+        this.soundSensor = soundSensor;
     }
 
     /**
