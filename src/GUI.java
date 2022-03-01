@@ -29,6 +29,7 @@ public class GUI{
     private double lcdScreenY;
     private double lcdScreenWidth;
     private double lcdScreenHeight;
+    public Button close;
 
     private final SoundSensor soundSensor;
     private final PowerSensor powerSensor;
@@ -47,6 +48,7 @@ public class GUI{
     }
 
     ArrayList<Button> buttonArrayList = new ArrayList<>();
+    Button[] fingerPrintButton = new Button[3];
 
 
     /**
@@ -183,7 +185,7 @@ public class GUI{
         soundDisplay.setTranslateY(50);
 
         pane.getChildren().addAll(background, safeCloseView, keypadPane, powerDisplay, onOffBtn, soundDisplay);
-        updateLCDDisplay("test", pane );
+        updateLCDDisplay("", pane );
         displaySelectFingerPrintButtons(pane);
         return pane;
     }
@@ -194,12 +196,7 @@ public class GUI{
      * Close-safe button
      */
     public void openSafe(){
-        Button close = new Button("Wanna close your safe?");
-
-        close.setOnMouseClicked(event -> {
-            pane.getChildren().clear();
-            createSafeInterface();
-        });
+        close = new Button("Wanna close your safe?");
         pane.getChildren().clear();
         InputStream stream = null;
         //Get safe image
@@ -293,7 +290,6 @@ public class GUI{
      */
     public void displaySelectFingerPrintButtons(Pane pane){
         InputStream stream = null;
-        Button fingerPrintButton[] = new Button[3];
         ImageView fingerPrintButtonIV[] = new ImageView[3];
         String names[] = {"Biraj", "Benathy", "Ruby"};
         String imageName;

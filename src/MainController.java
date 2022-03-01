@@ -1,4 +1,5 @@
 import Sensors.PowerSensor.PowerSensor;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -60,18 +61,42 @@ public class MainController extends Application {
 
         powerSensor.setOnAction(value -> {
             inputController.setKeyPressDisable(!value);
+            inputController.clearInput();
             if (value) {
-                if (inputController.getState() == STATE.SETUP) {
-                    inputController.startSetUp();
-                } else {
-                    inputController.startAuthorization();
-                }
+                gui.updateLCDDisplay("Welcome",pane);
+                AnimationTimer timer = new AnimationTimer() {
+                    private long start;
+                    @Override
+                    public void handle(long l) {
+                        if (start==0L) start = l;
+                        if (l-start>1_000_000_000) {
+                            if (inputController.getState() == STATE.FIRST_ACCESS ||
+                                    inputController.getState() == STATE.SETUP) {
+                                inputController.startSetUp();
+                            } else {
+                                inputController.startAuthorization();
+                            }
+                            this.stop();
+                        }
+                    }
+                };
+                timer.start();
             } else {
-                gui.updateLCDDisplay("off", pane);
-                inputController.clearInput();
+                gui.updateLCDDisplay("Locked",pane);
+                AnimationTimer timer = new AnimationTimer() {
+                    private long start;
+                    @Override
+                    public void handle(long l) {
+                        if (start==0L) start = l;
+                        if (l-start>2_000_000_000) {
+                            gui.updateLCDDisplay("off",pane);
+                            this.stop();
+                        }
+                    }
+                };
+                timer.start();
             }
         });
-        inputController.startSetUp();
         inputController.setKeyPressDisable(!powerSensor.hasPower());
     }
 

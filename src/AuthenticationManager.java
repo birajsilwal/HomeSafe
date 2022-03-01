@@ -13,6 +13,7 @@ import java.util.Random;
 abstract class AuthenticationManager {
     private ArrayList<String> resetPINs;
     private String currentKey;
+    private final String setUpPin = "012345";
     public AuthenticationManager(){
         resetPINs = new ArrayList<>();
     }
@@ -99,6 +100,9 @@ abstract class AuthenticationManager {
     public boolean isValidKey(String inputKey) {
         return currentKey != null && currentKey.equals(inputKey); //may need to override .equals() especially for Fingerprint?
     }
+    public boolean isValidSetUpPin(String s){
+        return setUpPin.equals(s);
+    }
 }
 /**
  * FingerprintKey class extends AuthenticationManager and manages a
@@ -124,6 +128,7 @@ class PasswordKey extends AuthenticationManager {
         resetPINs = new LinkedList<>();
         generateResetPINs();
         super.setResetPINs(resetPINs);
+        System.out.println("Set-up Pin: 012345");
     }
 
     //Method to generate the unique 15 unique reset pins
