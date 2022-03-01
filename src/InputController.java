@@ -4,7 +4,6 @@ import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.Pane;
-import java.util.Scanner;
 
 /**
  * Controls the input from the user and perform required functionality
@@ -15,7 +14,7 @@ public class InputController{
     private boolean isTimeOutActive = false;
     private String temp_setup_password = "";
     private int count_login = 5;
-    private boolean shouldStop = false;
+    public boolean shouldStop = false;
     private final GUI gui;
     private final Pane pane;
     private STATE state = STATE.FIRST_ACCESS;
@@ -47,7 +46,7 @@ public class InputController{
         boolean isCorrect = passwordManager.isValidKey(entered_key);
         if (isCorrect){
 //            displayForTwoSeconds("Authorized",pane);
-            displayThenOpen("Authorized",pane);
+            displayThenOpen(pane);
 //            gui.openSafe();
 //            gui.close.setOnAction(new EventHandler<ActionEvent>() {
 //                @Override
@@ -168,7 +167,10 @@ public class InputController{
                     if(start==0L) start = l;
                     else{
                         if(l-start>1_500_000_000L){
-                            if (state.equals(STATE.SETUP)) startSetUp();
+                            if (state.equals(STATE.SETUP)) {
+                                setState(STATE.FIRST_ACCESS);
+                                startSetUp();
+                            }
                             else {
                                 state = STATE.RESET;
                                 startResetPassword();
@@ -408,12 +410,11 @@ public class InputController{
 
     /**
      * Display text on LCD screen for 2 seconds then open safe
-     * @param message message to display
      * @param pane pane
      */
-    private void displayThenOpen(String message, Pane pane) {
+    private void displayThenOpen(Pane pane) {
         keyPressDisable = true;
-        gui.updateLCDDisplay(message,pane);
+        gui.updateLCDDisplay("Authorized",pane);
         entered_key = "";
         AnimationTimer timer1 = new AnimationTimer() {
             private long start1;
@@ -449,6 +450,9 @@ public class InputController{
 
     public STATE getState() {
         return state;
+    }
+    public void setState(STATE state) {
+        this.state = state;
     }
 
     public void clearInput() {
