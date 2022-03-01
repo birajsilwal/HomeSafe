@@ -8,20 +8,20 @@ import javafx.scene.layout.Pane;
 /**
  * Controls the input from the user and perform required functionality
  */
-public class InputController{
+public class InputController {
+    private final GUI gui;
+    private final Pane pane;
+    private final AuthenticationManager fingerPrintManager = new FingerprintKey();
+    private final AuthenticationManager passwordManager = new PasswordKey();
+    public boolean shouldStop = false;
+    SoundSensor soundSensor;
     private String entered_key = "";
-    private String temp_fingerPrint =  "";
+    private String temp_fingerPrint = "";
     private boolean isTimeOutActive = false;
     private String temp_setup_password = "";
     private int count_login = 5;
-    public boolean shouldStop = false;
-    private final GUI gui;
-    private final Pane pane;
     private STATE state = STATE.FIRST_ACCESS;
-    private final AuthenticationManager fingerPrintManager = new FingerprintKey();
-    private final AuthenticationManager passwordManager = new PasswordKey();
     private boolean keyPressDisable = true;
-    SoundSensor soundSensor;
 
 
     public InputController(GUI gui, Pane pane, SecurityManager securityManager, SoundSensor soundSensor) {
@@ -32,9 +32,10 @@ public class InputController{
 
     /**
      * Read the number inputted by user
+     *
      * @param s number inputted
      */
-    public void readKey(String s){
+    public void readKey(String s) {
         this.entered_key += s;
     }
 
@@ -44,7 +45,7 @@ public class InputController{
      */
     public void checkPassword(String entered_key) {
         boolean isCorrect = passwordManager.isValidKey(entered_key);
-        if (isCorrect){
+        if (isCorrect) {
 //            displayForTwoSeconds("Authorized",pane);
             displayThenOpen(pane);
 //            gui.openSafe();
@@ -56,25 +57,25 @@ public class InputController{
 //                    startAuthorization();
 //                }
 //            });
-        }
-        else if (count_login==0){
-            displayForTwoSeconds("Max attempt reached",pane);
+        } else if (count_login == 0) {
+            displayForTwoSeconds("Max attempt reached", pane);
             redirectToAuthorization();
-        }
-        else{
-            displayForTwoSeconds("Incorrect Password, Re-enter",pane);
+        } else {
+            displayForTwoSeconds("Incorrect Password, Re-enter", pane);
             count_login--;
             redirectToAuthorization();
         }
     }
-    public void redirectToAuthorization(){
+
+    public void redirectToAuthorization() {
         AnimationTimer timer = new AnimationTimer() {
             private long start;
+
             @Override
             public void handle(long l) {
-                if(start==0L) start = l;
-                else{
-                    if(l-start>2_000_000_000L){
+                if (start == 0L) start = l;
+                else {
+                    if (l - start > 2_000_000_000L) {
                         startAuthorization();
                         this.stop();
                     }
@@ -83,27 +84,29 @@ public class InputController{
         };
         timer.start();
     }
-    public void checkResetPin(String entered_key){
+
+    public void checkResetPin(String entered_key) {
         boolean isPWCorrect = passwordManager.isValidKey(entered_key);
         boolean isResetCorrect = passwordManager.containsResetPIN(entered_key);
         if (isResetCorrect) passwordManager.removeResetPIN(entered_key);
-        gui.updateLCDDisplay("",pane);
+        gui.updateLCDDisplay("", pane);
 
-        if (isPWCorrect || isResetCorrect){
-            if (isResetCorrect){
+        if (isPWCorrect || isResetCorrect) {
+            if (isResetCorrect) {
                 System.out.println("1 reset is lost");
             }
             state = STATE.SETUP_IN_RESET;
             setUpNewPassword();
-        }else{
-            displayForTwoSeconds("Incorrect pw or reset pin",pane);
+        } else {
+            displayForTwoSeconds("Incorrect pw or reset pin", pane);
             AnimationTimer timer = new AnimationTimer() {
                 private long start;
+
                 @Override
                 public void handle(long l) {
-                    if(start==0L) start = l;
-                    else{
-                        if(l-start>1_500_000_000L){
+                    if (start == 0L) start = l;
+                    else {
+                        if (l - start > 1_500_000_000L) {
                             startResetPassword();
                             this.stop();
                         }
@@ -116,16 +119,17 @@ public class InputController{
 
     /**
      * First-time set-up: Get input password from user and store it???
+     *
      * @param password set-up password
      */
-    public void checkSetUpPassword(String password){
+    public void checkSetUpPassword(String password) {
         if (temp_setup_password.equals("")) {
-            if (password.length()==6) {
+            if (password.length() == 6) {
                 temp_setup_password = password;
                 displayForTwoSeconds("Confirm Password", pane);
                 listenKeyPress();
-            }else{
-                displayForTwoSeconds("Enter 6-digit password",pane);
+            } else {
+                displayForTwoSeconds("Enter 6-digit password", pane);
                 if (state.equals(STATE.SETUP))
                     startSetUp();
                 else {
@@ -133,22 +137,22 @@ public class InputController{
                     startResetPassword();
                 }
             }
-        }
-        else if(temp_setup_password.equals(password)){
+        } else if (temp_setup_password.equals(password)) {
             //authenticationManager.setSavedPassword(password);
             passwordManager.setKey(password);
             fingerPrintManager.setKey(temp_fingerPrint);
-            System.out.println("Saved password is: "+password);
-            displayForTwoSeconds("Saved Password",pane);
+            System.out.println("Saved password is: " + password);
+            displayForTwoSeconds("Saved Password", pane);
             state = STATE.NORMAL;
             temp_setup_password = "";
             AnimationTimer timer = new AnimationTimer() {
                 private long start;
+
                 @Override
                 public void handle(long l) {
-                    if(start==0L) start = l;
-                    else{
-                        if(l-start>1_500_000_000L){
+                    if (start == 0L) start = l;
+                    else {
+                        if (l - start > 1_500_000_000L) {
                             startAuthorization();
                             this.stop();
                         }
@@ -156,22 +160,21 @@ public class InputController{
                 }
             };
             timer.start();
-        }
-        else{
-            displayForTwoSeconds("Password didn't Match",pane);
+        } else {
+            displayForTwoSeconds("Password didn't Match", pane);
             temp_setup_password = "";
             AnimationTimer timer = new AnimationTimer() {
                 private long start;
+
                 @Override
                 public void handle(long l) {
-                    if(start==0L) start = l;
-                    else{
-                        if(l-start>1_500_000_000L){
+                    if (start == 0L) start = l;
+                    else {
+                        if (l - start > 1_500_000_000L) {
                             if (state.equals(STATE.SETUP)) {
                                 setState(STATE.FIRST_ACCESS);
                                 startSetUp();
-                            }
-                            else {
+                            } else {
                                 state = STATE.RESET;
                                 startResetPassword();
                             }
@@ -183,11 +186,12 @@ public class InputController{
             timer.start();
         }
     }
+
     /**
      * Runs setting-up password functionality
      */
     public void setUpNewPassword() {
-        gui.updateLCDDisplay("Enter New Password",pane);
+        gui.updateLCDDisplay("Enter New Password", pane);
         listenKeyPress();
     }
 
@@ -195,7 +199,7 @@ public class InputController{
      * Starts setting-up password
      */
     public void startSetUp() {
-        gui.updateLCDDisplay("Enter Set-up Password",pane);
+        gui.updateLCDDisplay("Enter Set-up Password", pane);
         listenKeyPress();
     }
 
@@ -206,30 +210,28 @@ public class InputController{
 
     public void startResetPassword() {
         temp_setup_password = "";
-        gui.updateLCDDisplay("Enter password or reset pin",pane);
+        gui.updateLCDDisplay("Enter password or reset pin", pane);
         listenKeyPress();
     }
 
-    public void listenFingerPress(){
-        gui.updateLCDDisplay("Enter Fingerprint",pane);
+    public void listenFingerPress() {
+        gui.updateLCDDisplay("Enter Fingerprint", pane);
         for (int i = 0; i < gui.fingerPrintButton.length; i++) {
             int finalI = i;
             gui.fingerPrintButton[i].setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    keyPressDisable =  false;
+                    keyPressDisable = false;
                     gui.animateFingerPrint(pane);
                     if (state.equals(STATE.SETUP)) {
                         temp_fingerPrint = gui.fingerPrintButton[finalI].getText();
                         System.out.println(temp_fingerPrint);
                         setUpNewPassword();
-                    }
-                    else{
-                        if (fingerPrintManager.isValidKey(gui.fingerPrintButton[finalI].getText())){
+                    } else {
+                        if (fingerPrintManager.isValidKey(gui.fingerPrintButton[finalI].getText())) {
                             gui.updateLCDDisplay("Enter Password", pane);
                             listenKeyPress();
-                        }
-                        else{
+                        } else {
                             listenFingerPress();
                         }
                     }
@@ -249,12 +251,13 @@ public class InputController{
         shouldStop = false;
         AnimationTimer timer = new AnimationTimer() {
             private long start;
+
             @Override
             public void handle(long now) {
-                if (start==0L) start = now;
-                else if(shouldStop) this.stop();
-                else{
-                    if (now-start>=10_000_000_000L){
+                if (start == 0L) start = now;
+                else if (shouldStop) this.stop();
+                else {
+                    if (now - start >= 10_000_000_000L) {
                         if (isTimeOutActive) {
                             displayForTwoSeconds("TimeOut", pane);
                             AnimationTimer timer1 = new AnimationTimer() {
@@ -277,14 +280,13 @@ public class InputController{
                             timer1.start();
                             isTimeOutActive = false;
                         }
-                    }
-                    else{
-                        for (int i=0; i<=9; i++){
+                    } else {
+                        for (int i = 0; i <= 9; i++) {
                             String finalI = String.valueOf(i);
                             gui.buttonArrayList.get(i).setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    if(!keyPressDisable) {
+                                    if (!keyPressDisable) {
                                         System.out.println("Clicked");
                                         readKey(finalI);
                                         gui.updateLCDDisplay(entered_key, pane);
@@ -330,7 +332,7 @@ public class InputController{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 if (!keyPressDisable) {
-                                    if (entered_key.length()>0)
+                                    if (entered_key.length() > 0)
                                         entered_key = entered_key.substring(0, entered_key.length() - 1);
                                     try {
                                         soundSensor.playSound(Sound.Beep);
@@ -342,22 +344,21 @@ public class InputController{
                                 }
                             }
                         });
-                        gui.buttonArrayList.get(11).setOnAction(new EventHandler<ActionEvent>(){
+                        gui.buttonArrayList.get(11).setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
-                                if(!keyPressDisable) {
-                                    if (state.equals(STATE.FIRST_ACCESS)){
-                                        if (passwordManager.isValidSetUpPin(entered_key)){
+                                if (!keyPressDisable) {
+                                    if (state.equals(STATE.FIRST_ACCESS)) {
+                                        if (passwordManager.isValidSetUpPin(entered_key)) {
                                             state = STATE.SETUP;
                                             listenFingerPress();
-                                        }else startSetUp();
-                                    }
-                                    else if (entered_key.equals("000") && state.equals(STATE.NORMAL)) {
+                                        } else startSetUp();
+                                    } else if (entered_key.equals("000") && state.equals(STATE.NORMAL)) {
                                         temp_setup_password = "";
                                         state = STATE.RESET;
                                         startResetPassword();
-                                    }
-                                    else if (state.equals(STATE.SETUP) || state.equals(STATE.SETUP_IN_RESET)) checkSetUpPassword(entered_key);
+                                    } else if (state.equals(STATE.SETUP) || state.equals(STATE.SETUP_IN_RESET))
+                                        checkSetUpPassword(entered_key);
                                     else if (state.equals(STATE.NORMAL)) checkPassword(entered_key);
                                     else if (state.equals(STATE.RESET)) checkResetPin(entered_key);
                                     entered_key = "";
@@ -380,24 +381,25 @@ public class InputController{
     }
 
 
-
     /**
      * Display text on LCD screen for 2 seconds
+     *
      * @param message message to display
-     * @param pane pane
+     * @param pane    pane
      */
     private void displayForTwoSeconds(String message, Pane pane) {
         keyPressDisable = true;
-        gui.updateLCDDisplay(message,pane);
+        gui.updateLCDDisplay(message, pane);
         entered_key = "";
         AnimationTimer timer1 = new AnimationTimer() {
             private long start1;
+
             @Override
             public void handle(long l) {
-                if (start1==0L) start1 = l;
-                else{
-                    if (l-start1>1_500_000_000){
-                        gui.updateLCDDisplay("",pane);
+                if (start1 == 0L) start1 = l;
+                else {
+                    if (l - start1 > 1_500_000_000) {
+                        gui.updateLCDDisplay("", pane);
                         keyPressDisable = false;
                         this.stop();
                     }
@@ -410,20 +412,22 @@ public class InputController{
 
     /**
      * Display text on LCD screen for 2 seconds then open safe
+     *
      * @param pane pane
      */
     private void displayThenOpen(Pane pane) {
         keyPressDisable = true;
-        gui.updateLCDDisplay("Authorized",pane);
+        gui.updateLCDDisplay("Authorized", pane);
         entered_key = "";
         AnimationTimer timer1 = new AnimationTimer() {
             private long start1;
+
             @Override
             public void handle(long l) {
-                if (start1==0L) start1 = l;
-                else{
-                    if (l-start1>1_500_000_000){
-                        gui.updateLCDDisplay("",pane);
+                if (start1 == 0L) start1 = l;
+                else {
+                    if (l - start1 > 1_500_000_000) {
+                        gui.updateLCDDisplay("", pane);
                         keyPressDisable = false;
                         this.stop();
                         gui.openSafe();
@@ -451,6 +455,7 @@ public class InputController{
     public STATE getState() {
         return state;
     }
+
     public void setState(STATE state) {
         this.state = state;
     }

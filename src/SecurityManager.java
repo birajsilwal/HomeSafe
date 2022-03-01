@@ -3,6 +3,7 @@
  * sensor state.
  * When the lock system is locked, the sensor is presses
  * but when the lock system is unlocked, the sensor is unpressed state.
+ *
  * @author Biraj Silwal
  */
 
@@ -12,13 +13,6 @@ public class SecurityManager {
     private Boolean sensorIsPressed = true;
 
     /**
-     * set the state of the lock system to locked state.
-     */
-    public void setLockedState(Boolean lockedState) {
-        this.lockedState = lockedState;
-    }
-
-    /**
      * @return lockedState - lock state of the lock system
      */
     public Boolean getLockedState() {
@@ -26,10 +20,10 @@ public class SecurityManager {
     }
 
     /**
-     * if the lock system is locked, the sensor is pressed
+     * set the state of the lock system to locked state.
      */
-    public void setSensorPressedState(Boolean lockedState) {
-        sensorIsPressed = lockedState;
+    public void setLockedState(Boolean lockedState) {
+        this.lockedState = lockedState;
     }
 
     /**
@@ -37,5 +31,12 @@ public class SecurityManager {
      */
     public Boolean getSensorPressedState() {
         return sensorIsPressed;
+    }
+
+    /**
+     * if the lock system is locked, the sensor is pressed
+     */
+    public void setSensorPressedState(Boolean lockedState) {
+        sensorIsPressed = lockedState;
     }
 }

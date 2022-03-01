@@ -1,20 +1,12 @@
 import Sensors.PowerSensor.PowerSensor;
+import Sensors.SoundSensor.Sound;
+import Sensors.SoundSensor.SoundSensor;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-import Sensors.SoundSensor.Sound;
-import Sensors.SoundSensor.SoundSensor;
-import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.util.Scanner;
 
 
 public class MainController extends Application {
@@ -26,7 +18,7 @@ public class MainController extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        double width  = 1000;
+        double width = 1000;
         double height = 680;
 
         SoundSensor soundSensor = new SoundSensor();
@@ -35,7 +27,7 @@ public class MainController extends Application {
 
         GUI gui = new GUI(soundSensor, powerSensor);
         Pane pane = gui.createSafeInterface();
-        gui.updateLCDDisplay("off", pane );
+        gui.updateLCDDisplay("off", pane);
 //        gui.displaySelectFingerPrintButtons(pane);
 
         /*
@@ -57,18 +49,19 @@ public class MainController extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        InputController inputController = new InputController(gui, pane, securityManager,soundSensor);
+        InputController inputController = new InputController(gui, pane, securityManager, soundSensor);
         powerSensor.setOnAction(value -> {
             inputController.setKeyPressDisable(!value);
             inputController.clearInput();
             if (value) {
-                gui.updateLCDDisplay("Welcome",pane);
+                gui.updateLCDDisplay("Welcome", pane);
                 AnimationTimer timer = new AnimationTimer() {
                     private long start;
+
                     @Override
                     public void handle(long l) {
-                        if (start==0L) start = l;
-                        if (l-start>1_000_000_000) {
+                        if (start == 0L) start = l;
+                        if (l - start > 1_000_000_000) {
                             if (inputController.getState() == STATE.FIRST_ACCESS ||
                                     inputController.getState() == STATE.SETUP) {
                                 inputController.setState(STATE.FIRST_ACCESS);
@@ -83,15 +76,16 @@ public class MainController extends Application {
                 };
                 timer.start();
             } else {
-                gui.updateLCDDisplay("Locked",pane);
+                gui.updateLCDDisplay("Locked", pane);
                 inputController.shouldStop = true;
                 AnimationTimer timer = new AnimationTimer() {
                     private long start;
+
                     @Override
                     public void handle(long l) {
-                        if (start==0L) start = l;
-                        if (l-start>2_000_000_000) {
-                            gui.updateLCDDisplay("off",pane);
+                        if (start == 0L) start = l;
+                        if (l - start > 2_000_000_000) {
+                            gui.updateLCDDisplay("off", pane);
                             this.stop();
                         }
                     }
@@ -105,11 +99,12 @@ public class MainController extends Application {
 
     /**
      * Get corresponding sound for buttons
-     * @param s sound
+     *
+     * @param s    sound
      * @param text text corresponding with sounds
      * @return button
      */
-    private Button SoundButtonExample(Sound s, String text){
+    private Button SoundButtonExample(Sound s, String text) {
         Button b = new Button(text);
         b.setOnAction(e -> {
             try {
