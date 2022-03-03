@@ -18,8 +18,8 @@ public class MainController extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        double width = 1000;
-        double height = 680;
+        double width = 1100;
+        double height = 720;
 
         SoundSensor soundSensor = new SoundSensor();
         PowerSensor powerSensor = new PowerSensor();

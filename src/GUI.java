@@ -2,6 +2,7 @@ import Sensors.PowerSensor.PowerSensor;
 import Sensors.SoundSensor.Sound;
 import Sensors.SoundSensor.SoundSensor;
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -142,7 +143,7 @@ public class GUI {
         /*
          * Setup the root of the scene graph
          */
-        Label text = new Label("hello");
+        Label text = new Label("");
 
         BorderPane keypadPane = new BorderPane(text);
         keypadPane.getChildren().addAll(grayBackground, blackBackground, vbox);
@@ -305,7 +306,7 @@ public class GUI {
         ImageView[] fingerPrintButtonIV = new ImageView[3];
         String[] names = {"Biraj", "Bethany", "Ruby"};
         String imageName;
-        HBox box = new HBox();
+        VBox box = new VBox();
         int w = 30;
         int h = 35;
         for (int i = 0; i < 3; i++) {
@@ -330,7 +331,9 @@ public class GUI {
 
             box.getChildren().add(fingerPrintButton[i]);
         }
-
+        box.setMinWidth(50);
+        box.setSpacing(30);
+        box.setLayoutX(1000);
         //Add to Panel
         pane.getChildren().add(box);
     }
